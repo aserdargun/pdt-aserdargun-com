@@ -1,0 +1,237 @@
+{
+  "combinations": [
+    {
+      "viewName": "Assembly",
+      "conditionName": "Normal",
+      "canvas": true,
+      "condition": "normal",
+      "lesson": "A healthy operating baseline",
+      "ready": "true",
+      "view": "assembly"
+    },
+    {
+      "viewName": "Assembly",
+      "conditionName": "Cavitation",
+      "canvas": true,
+      "condition": "cavitation",
+      "lesson": "When water becomes vapor",
+      "ready": "true",
+      "view": "assembly"
+    },
+    {
+      "viewName": "Assembly",
+      "conditionName": "Bearing wear",
+      "canvas": true,
+      "condition": "bearing",
+      "lesson": "A small defect, repeated impacts",
+      "ready": "true",
+      "view": "assembly"
+    },
+    {
+      "viewName": "Assembly",
+      "conditionName": "Impeller wear",
+      "canvas": true,
+      "condition": "impeller",
+      "lesson": "Less effective blade passages",
+      "ready": "true",
+      "view": "assembly"
+    },
+    {
+      "viewName": "Assembly",
+      "conditionName": "Suction restriction",
+      "canvas": true,
+      "condition": "restriction",
+      "lesson": "The problem starts upstream",
+      "ready": "true",
+      "view": "assembly"
+    },
+    {
+      "viewName": "Cutaway",
+      "conditionName": "Normal",
+      "canvas": true,
+      "condition": "normal",
+      "lesson": "A healthy operating baseline",
+      "ready": "true",
+      "view": "cutaway"
+    },
+    {
+      "viewName": "Cutaway",
+      "conditionName": "Cavitation",
+      "canvas": true,
+      "condition": "cavitation",
+      "lesson": "When water becomes vapor",
+      "ready": "true",
+      "view": "cutaway"
+    },
+    {
+      "viewName": "Cutaway",
+      "conditionName": "Bearing wear",
+      "canvas": true,
+      "condition": "bearing",
+      "lesson": "A small defect, repeated impacts",
+      "ready": "true",
+      "view": "cutaway"
+    },
+    {
+      "viewName": "Cutaway",
+      "conditionName": "Impeller wear",
+      "canvas": true,
+      "condition": "impeller",
+      "lesson": "Less effective blade passages",
+      "ready": "true",
+      "view": "cutaway"
+    },
+    {
+      "viewName": "Cutaway",
+      "conditionName": "Suction restriction",
+      "canvas": true,
+      "condition": "restriction",
+      "lesson": "The problem starts upstream",
+      "ready": "true",
+      "view": "cutaway"
+    },
+    {
+      "viewName": "Exploded",
+      "conditionName": "Normal",
+      "canvas": true,
+      "condition": "normal",
+      "lesson": "A healthy operating baseline",
+      "ready": "true",
+      "view": "exploded"
+    },
+    {
+      "viewName": "Exploded",
+      "conditionName": "Cavitation",
+      "canvas": true,
+      "condition": "cavitation",
+      "lesson": "When water becomes vapor",
+      "ready": "true",
+      "view": "exploded"
+    },
+    {
+      "viewName": "Exploded",
+      "conditionName": "Bearing wear",
+      "canvas": true,
+      "condition": "bearing",
+      "lesson": "A small defect, repeated impacts",
+      "ready": "true",
+      "view": "exploded"
+    },
+    {
+      "viewName": "Exploded",
+      "conditionName": "Impeller wear",
+      "canvas": true,
+      "condition": "impeller",
+      "lesson": "Less effective blade passages",
+      "ready": "true",
+      "view": "exploded"
+    },
+    {
+      "viewName": "Exploded",
+      "conditionName": "Suction restriction",
+      "canvas": true,
+      "condition": "restriction",
+      "lesson": "The problem starts upstream",
+      "ready": "true",
+      "view": "exploded"
+    },
+    {
+      "viewName": "Sensors",
+      "conditionName": "Normal",
+      "canvas": true,
+      "condition": "normal",
+      "lesson": "A healthy operating baseline",
+      "ready": "true",
+      "view": "sensors"
+    },
+    {
+      "viewName": "Sensors",
+      "conditionName": "Cavitation",
+      "canvas": true,
+      "condition": "cavitation",
+      "lesson": "When water becomes vapor",
+      "ready": "true",
+      "view": "sensors"
+    },
+    {
+      "viewName": "Sensors",
+      "conditionName": "Bearing wear",
+      "canvas": true,
+      "condition": "bearing",
+      "lesson": "A small defect, repeated impacts",
+      "ready": "true",
+      "view": "sensors"
+    },
+    {
+      "viewName": "Sensors",
+      "conditionName": "Impeller wear",
+      "canvas": true,
+      "condition": "impeller",
+      "lesson": "Less effective blade passages",
+      "ready": "true",
+      "view": "sensors"
+    },
+    {
+      "viewName": "Sensors",
+      "conditionName": "Suction restriction",
+      "canvas": true,
+      "condition": "restriction",
+      "lesson": "The problem starts upstream",
+      "ready": "true",
+      "view": "sensors"
+    }
+  ],
+  "sensors": [
+    {
+      "name": "Suction pressure",
+      "heading": "Suction pressure",
+      "id": "PT-101S"
+    },
+    {
+      "name": "Discharge pressure",
+      "heading": "Discharge pressure",
+      "id": "PT-101D"
+    },
+    {
+      "name": "Flow sensor",
+      "heading": "Flow sensor",
+      "id": "FT-101"
+    },
+    {
+      "name": "Motor current / power",
+      "heading": "Motor current / power",
+      "id": "PWR-101"
+    },
+    {
+      "name": "Motor temperature",
+      "heading": "Motor temperature",
+      "id": "TT-101M"
+    },
+    {
+      "name": "Bearing temperature",
+      "heading": "Bearing temperature",
+      "id": "TT-101B"
+    },
+    {
+      "name": "Axial vibration",
+      "heading": "Axial vibration",
+      "id": "VA-101A"
+    },
+    {
+      "name": "Radial vibration",
+      "heading": "Radial vibration",
+      "id": "VA-101R"
+    }
+  ],
+  "productionErrors": [],
+  "desktop": {
+    "width": 1536,
+    "height": 1024
+  },
+  "mobile": {
+    "width": 390,
+    "height": 844,
+    "horizontalOverflow": false,
+    "keyboardSensorToggle": true
+  }
+}

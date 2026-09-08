@@ -1,0 +1,22 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/models/*", "/*.png", "/release.json"]
+  },
+  "mimeTypes": {
+    ".glb": "model/gltf-binary",
+    ".png": "image/png",
+    ".json": "application/json"
+  },
+  "routes": [
+    { "route": "/release.json", "headers": { "Cache-Control": "no-store" } },
+    {
+      "route": "/models/*",
+      "headers": { "Cache-Control": "public, max-age=0, must-revalidate" }
+    }
+  ],
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  }
+}
