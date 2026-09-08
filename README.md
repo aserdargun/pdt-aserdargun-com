@@ -49,6 +49,8 @@ This implements the approved educational MVP. It is simplified teaching geometry
 
 ## Publication
 
+Production URL: [P-101 Interactive Digital Twin](https://gray-meadow-083c04f03.3.azurestaticapps.net).
+
 Source repository: [aserdargun/pdt-aserdargun-com](https://github.com/aserdargun/pdt-aserdargun-com).
 
 Azure target: `swa-pdt-aserdargun-com`, resource group `rg-pdt-aserdargun-com`, Free SKU in West Europe, explicitly under `aserdargun subscription 3`. Existing portfolio resources remain in their own subscriptions. Deployment uses prebuilt `dist/` and one GitHub Actions production workflow.
