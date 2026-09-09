@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label="pdt">
+  <rect width="320" height="320" rx="64" fill="#121310"/>
+  <circle cx="160" cy="142" r="108" fill="#c8ff36"/>
+  <g transform="translate(60 42)" fill="none" stroke="#0c0d0a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="100" cy="100" r="58" />
+    <circle cx="100" cy="100" r="34" />
+    <circle cx="100" cy="100" r="10" fill="#0c0d0a" />
+    <line x1="100" y1="20" x2="100" y2="46" />
+    <line x1="100" y1="154" x2="100" y2="180" />
+    <line x1="20" y1="100" x2="46" y2="100" />
+    <line x1="154" y1="100" x2="180" y2="100" />
+  </g>
+  <text x="160" y="296" text-anchor="middle" fill="#c8ff36"
+    font-family="Inter, Helvetica, Arial, sans-serif" font-size="40" font-weight="800"
+    letter-spacing="-2">PDT</text>
+</svg>
