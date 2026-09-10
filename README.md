@@ -11,16 +11,19 @@ npm ci
 npm run dev -- --port 4317 --strictPort
 ```
 
-Open http://127.0.0.1:4317. Drag to orbit, scroll to zoom, or use the view and condition-focus controls. Stop the process with Ctrl+C in its own terminal. Do not terminate unrelated port listeners.
+Open http://127.0.0.1:4317. Drag to orbit, pinch or scroll to zoom, or focus the canvas and use the arrow keys to orbit and +/− to zoom. Show flow opens the cutaway automatically. Sensor markers have leader lines and equivalent inspector controls. Reduced-motion preferences pause animation; Play explicitly resumes it. Stop the process with Ctrl+C in its own terminal. Do not terminate unrelated port listeners.
 
 ```sh
 npm run build
 npm test
 npm run verify:artifact
+npm run test:e2e
 npm run preview -- --port 4318 --strictPort
 ```
 
-The build creates `dist/` with Azure Static Web Apps configuration and a commit-correlated `release.json`. There is no backend, external model service or live telemetry. All condition traces are illustrative and synthetic.
+Run `npm run validate` for the complete model, build, artifact and Chromium interaction suite. The browser suite starts an isolated production preview on port 4319 and writes failure evidence to the operating system temporary directory. Install the matching Chromium once with `npx playwright install chromium` if it is not already available.
+
+The build creates `dist/` with Azure Static Web Apps configuration and a commit-correlated `release.json` that also marks uncommitted local builds with `dirty: true`. There is no backend, external model service or live telemetry. All condition traces are illustrative and synthetic.
 
 ## Editable asset
 
@@ -34,7 +37,7 @@ npm run asset:build
 
 On another installation, run `blender -b --python scripts/build_asset.py` from this repository. The Python script needs Blender's `bpy` and has no external Python dependencies.
 
-See [the asset specification](docs/ASSET-SPEC.md) for hierarchy, semantic metadata, view rules, assumptions and V2 scope. See [verification](docs/VERIFICATION.md) for the current test evidence.
+See [the asset specification](docs/ASSET-SPEC.md) for hierarchy, semantic metadata, view rules, assumptions and V2 scope. See [verification](docs/VERIFICATION.md) for the historical initial-release evidence; use the validation commands above for the current checkout.
 
 ## Files for reuse
 

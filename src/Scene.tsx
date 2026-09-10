@@ -12,12 +12,19 @@ import {
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { sensors, type View, type Condition } from "./data";
-import { prepareModel, visibleInState } from "./modelState";
+import {
+  prepareModel,
+  applyModelView,
+  placeImpeller,
+  disposeModelMaterials,
+} from "./modelState";
+import StaticExhibit from "./StaticExhibit";
 
 type Props = {
   view: View;
   condition: Condition;
   playing: boolean;
+  active: boolean;
   flow: boolean;
   selected: string | null;
   sensorId: string | null;
@@ -27,6 +34,7 @@ type Props = {
   reset: number;
   reduced: boolean;
   onReady: () => void;
+  onUnavailable: () => void;
 };
 const presets: Record<
   string,
@@ -51,7 +59,7 @@ function CameraRig({
   reduced: boolean;
 }) {
   const controls = useRef<OrbitControlsImpl>(null);
-  const { camera: cam, size } = useThree();
+  const { camera: cam, size, gl, invalidate } = useThree();
   useEffect(() => {
     const p = presets[camera] || presets.hero;
     const t = new THREE.Vector3(...p.target);
@@ -66,14 +74,55 @@ function CameraRig({
     cam.position.copy(t.clone().add(dir.normalize().multiplyScalar(distance)));
     controls.current?.target.copy(t);
     controls.current?.update();
-  }, [cam, camera, reset, view, size.width]);
+  }, [cam, camera, reset, view, size.width, size.height]);
+  useEffect(() => {
+    const element = gl.domElement;
+    element.tabIndex = 0;
+    element.setAttribute(
+      "aria-label",
+      "Pump camera. Arrow keys rotate; plus and minus zoom. Use Reset view to return.",
+    );
+    const keydown = (event: KeyboardEvent) => {
+      const orbit = controls.current;
+      if (!orbit || event.altKey || event.ctrlKey || event.metaKey) return;
+      const step = Math.PI / 18;
+      switch (event.key) {
+        case "ArrowLeft":
+          orbit.setAzimuthalAngle(orbit.getAzimuthalAngle() - step);
+          break;
+        case "ArrowRight":
+          orbit.setAzimuthalAngle(orbit.getAzimuthalAngle() + step);
+          break;
+        case "ArrowUp":
+          orbit.setPolarAngle(orbit.getPolarAngle() - step);
+          break;
+        case "ArrowDown":
+          orbit.setPolarAngle(orbit.getPolarAngle() + step);
+          break;
+        case "+":
+        case "=":
+          orbit.dollyIn(1.15);
+          break;
+        case "-":
+          orbit.dollyOut(1.15);
+          break;
+        default:
+          return;
+      }
+      event.preventDefault();
+      orbit.update();
+      invalidate();
+    };
+    element.addEventListener("keydown", keydown);
+    return () => element.removeEventListener("keydown", keydown);
+  }, [gl, invalidate]);
   return (
     <OrbitControls
       ref={controls}
       makeDefault
       enableDamping={!reduced}
       minDistance={0.65}
-      maxDistance={8}
+      maxDistance={Math.max(8, (10 * size.height) / size.width)}
       minPolarAngle={0.15}
       maxPolarAngle={Math.PI / 2.05}
       enablePan={false}
@@ -84,76 +133,56 @@ function Pump(props: Props) {
   const { scene: source } = useGLTF("/models/p101-teaching.glb");
   const model = useMemo(() => prepareModel(source), [source]);
   const rotation = useRef(0);
+  const meshes = useMemo(() => {
+    const list: THREE.Mesh[] = [];
+    model.traverse((object) => {
+      if (object instanceof THREE.Mesh) list.push(object);
+    });
+    return list;
+  }, [model]);
+  const impellers = useMemo(
+    () => meshes.filter((mesh) => mesh.userData.componentId === "impeller"),
+    [meshes],
+  );
   useEffect(() => {
     props.onReady();
-  }, [props.onReady]);
+    return () => disposeModelMaterials(model);
+  }, [model, props.onReady]);
   useEffect(() => {
-    model.traverse((o) => {
-      if (!(o instanceof THREE.Mesh)) return;
-      const role = o.userData.role;
-      const c = o.userData.componentId;
-      const open = props.view === "cutaway";
-      const exploded = props.view === "exploded";
-      o.visible = visibleInState(role, props.view, props.condition);
-      const base = o.userData.basePosition as THREE.Vector3;
-      o.position.copy(base);
-      if (c === "impeller") {
-        o.rotation.x = 0;
-        rotation.current = 0;
-      }
-      if (exploded) {
-        if (c === "motor") o.position.x -= 0.35;
-        if (role === "guard") o.position.y += 0.4;
-        if (role === "cover") {
-          if (c === "bearing") o.position.y += 0.35;
-          else o.position.x += 0.36;
+    applyModelView(meshes, props.view, props.condition, rotation.current);
+  }, [meshes, props.view, props.condition]);
+  useEffect(() => {
+    for (const mesh of meshes) {
+      const { componentId: c, role } = mesh.userData;
+      const materials = Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material];
+      for (const material of materials) {
+        const m = material as THREE.MeshStandardMaterial;
+        m.emissive.set(props.selected === c ? "#537681" : "#000000");
+        m.emissiveIntensity = props.selected === c ? 0.25 : 0;
+        if (
+          props.condition === "bearing" &&
+          c === "bearing" &&
+          /HOUSING|RACE/.test(mesh.name) &&
+          role !== "cover"
+        ) {
+          m.emissive.set("#ad4218");
+          m.emissiveIntensity = props.selected === c ? 0.35 : 0.18;
         }
-        if (c === "suction") o.position.x += 0.6;
-        if (c === "impeller")
-          o.position.x += role.endsWith("_shroud") ? 0.28 : 0.12;
       }
-      const m = o.material as THREE.MeshStandardMaterial;
-      m.emissive.set(props.selected === c ? "#537681" : "#000000");
-      m.emissiveIntensity = props.selected === c ? 0.25 : 0;
-      if (
-        props.condition === "bearing" &&
-        c === "bearing" &&
-        /HOUSING|RACE/.test(o.name) &&
-        role !== "cover"
-      ) {
-        m.emissive.set("#ad4218");
-        m.emissiveIntensity = 0.18;
-      }
-    });
-  }, [model, props.view, props.condition, props.selected]);
-  // Rotate each impeller mesh about the common shaft center, preserving its authored coordinates.
-  const pivot = useMemo(() => new THREE.Vector3(0.58, 0.48, 0), []);
+    }
+  }, [meshes, props.condition, props.selected]);
   useFrame((_, dt) => {
     if (!props.playing || props.view === "exploded") return;
-    rotation.current += Math.min(dt, 0.05) * 0.55;
-    model.traverse((o) => {
-      if (!(o instanceof THREE.Mesh) || o.userData.componentId !== "impeller")
-        return;
-      const base = o.userData.basePosition as THREE.Vector3;
-      o.position
-        .copy(base)
-        .sub(pivot)
-        .applyAxisAngle(new THREE.Vector3(1, 0, 0), rotation.current)
-        .add(pivot);
-      o.rotation.x = rotation.current;
-    });
+    rotation.current =
+      (rotation.current + Math.min(dt, 0.05) * 0.55) % (Math.PI * 2);
+    for (const mesh of impellers) placeImpeller(mesh, rotation.current);
   });
-  useEffect(() => {
-    if (props.view === "exploded") {
-      model.traverse((o) => {
-        if (o instanceof THREE.Mesh && o.userData.componentId === "impeller")
-          o.rotation.x = 0;
-      });
-    }
-  }, [model, props.view]);
   return (
     <primitive
       object={model}
+      dispose={null}
       onClick={(e: { stopPropagation: () => void; object: THREE.Object3D }) => {
         e.stopPropagation();
         const id = e.object.userData.componentId;
@@ -288,15 +317,33 @@ function SensorMarkers({
           center
           zIndexRange={[10, 0]}
         >
-          <button
-            className={`sensor-marker ${sensorId === s.id ? "active" : ""}`}
-            onClick={() => onSensor(s.id)}
-            title={`${s.id} · ${s.name}`}
-            aria-label={`Inspect ${s.name}`}
-            aria-pressed={sensorId === s.id}
+          <div
+            className="sensor-callout"
+            style={
+              {
+                "--marker-x": `${[42, 42, 0, -38, -18, 8, -42, 44][i]}px`,
+                "--marker-y": `${[18, -4, -44, 30, -40, -65, -18, -35][i]}px`,
+              } as import("react").CSSProperties
+            }
           >
-            {i + 1}
-          </button>
+            <svg className="sensor-leader" aria-hidden="true">
+              <line
+                x1="0"
+                y1="0"
+                x2={[42, 42, 0, -38, -18, 8, -42, 44][i]}
+                y2={[18, -4, -44, 30, -40, -65, -18, -35][i]}
+              />
+            </svg>
+            <button
+              className={`sensor-marker ${sensorId === s.id ? "active" : ""}`}
+              onClick={() => onSensor(s.id)}
+              title={`${s.id} · ${s.name}`}
+              aria-label={`Inspect ${s.name}`}
+              aria-pressed={sensorId === s.id}
+            >
+              {i + 1}
+            </button>
+          </div>
         </Html>
       ))}
       {sensorId === "VA-101A" && (
@@ -322,26 +369,46 @@ function SensorMarkers({
     </group>
   );
 }
+function ContextHealth({ onUnavailable }: { onUnavailable: () => void }) {
+  const canvas = useThree((state) => state.gl.domElement);
+  useEffect(() => {
+    const lost = (event: Event) => {
+      event.preventDefault();
+      onUnavailable();
+    };
+    canvas.addEventListener("webglcontextlost", lost);
+    return () => canvas.removeEventListener("webglcontextlost", lost);
+  }, [canvas, onUnavailable]);
+  return null;
+}
+
 export default function Scene(props: Props) {
+  const supported = useMemo(() => {
+    try {
+      const context = document.createElement("canvas").getContext("webgl2");
+      if (!context) return false;
+      context.getExtension("WEBGL_lose_context")?.loseContext();
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+  useEffect(() => {
+    if (!supported) props.onUnavailable();
+  }, [supported, props.onUnavailable]);
+  if (!supported) return <StaticExhibit />;
+  const animated = props.playing && props.active && props.view !== "exploded";
+  const sceneProps = { ...props, playing: animated };
   return (
     <Canvas
       shadows
+      frameloop={animated ? "always" : "demand"}
       dpr={[1, 1.75]}
       camera={{ position: [2.6, 1.8, 4.1], fov: 36, near: 0.05, far: 50 }}
-      gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
-      fallback={
-        <div className="fallback">
-          <img
-            src="/p101-poster.png"
-            alt="P-101 motor and centrifugal pump assembly"
-          />
-          <p>
-            Static alternative. The component and sensor lessons remain
-            available below.
-          </p>
-        </div>
-      }
+      gl={{ antialias: true, alpha: true, preserveDrawingBuffer: false }}
+      fallback={<StaticExhibit />}
     >
+      <ContextHealth onUnavailable={props.onUnavailable} />
       <ambientLight intensity={0.65} />
       <directionalLight position={[-2, 4, 3]} intensity={2.7} />
       <directionalLight position={[3, 2, -2]} intensity={2} />
@@ -356,7 +423,7 @@ export default function Scene(props: Props) {
           </Html>
         }
       >
-        <Pump {...props} />
+        <Pump {...sceneProps} />
         {props.view === "exploded" && (
           <Line
             points={[
@@ -370,18 +437,18 @@ export default function Scene(props: Props) {
             gapSize={0.025}
           />
         )}
-        {props.flow && <Flow {...props} />}
-        {props.condition === "cavitation" && <Bubbles {...props} />}
+        {props.flow && <Flow {...sceneProps} />}
+        {props.condition === "cavitation" && <Bubbles {...sceneProps} />}
         {props.view === "sensors" && <SensorMarkers {...props} />}
         <ContactShadows
-          key={props.view}
+          key={`${props.view}-${props.condition}`}
           position={[0, 0.01, 0]}
           opacity={0.38}
           scale={7}
           blur={2.7}
           far={3}
           resolution={512}
-          frames={props.view === "exploded" ? Infinity : 1}
+          frames={1}
         />
       </Suspense>
       <CameraRig {...props} />

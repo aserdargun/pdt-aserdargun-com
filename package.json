@@ -8,8 +8,10 @@
     "build": "tsc -b && vite build && node scripts/write-release.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.mjs",
+    "test:e2e": "playwright test",
     "asset:build": "/Applications/Blender.app/Contents/MacOS/Blender -b --python scripts/build_asset.py",
-    "verify:artifact": "node scripts/verify-artifact.mjs"
+    "verify:artifact": "node scripts/verify-artifact.mjs",
+    "validate": "npm test && npm run build && npm run verify:artifact && npm run test:e2e"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",

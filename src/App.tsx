@@ -3,6 +3,8 @@ import {
   lazy,
   Suspense,
   useCallback,
+  useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -25,34 +27,27 @@ import {
   type Condition,
 } from "./data";
 import Signals from "./Signals";
+import StaticExhibit from "./StaticExhibit";
 const Scene = lazy(() => import("./Scene"));
 class SceneBoundary extends Component<
-  { children: ReactNode },
+  { children: ReactNode; onUnavailable: () => void },
   { error: boolean }
 > {
   state = { error: false };
   static getDerivedStateFromError() {
     return { error: true };
   }
+  componentDidCatch() {
+    this.props.onUnavailable();
+  }
   render() {
-    return this.state.error ? (
-      <div className="fallback">
-        <img src="/p101-poster.png" alt="P-101 pump assembly" />
-        <p>
-          The 3D exhibit could not load. Component and sensor explanations
-          remain available.{" "}
-          <button onClick={() => location.reload()}>Retry</button>
-        </p>
-      </div>
-    ) : (
-      this.props.children
-    );
+    return this.state.error ? <StaticExhibit /> : this.props.children;
   }
 }
 export default function App() {
   const [view, setView] = useState<View>("assembly");
   const [condition, setCondition] = useState<Condition>("normal");
-  const [reduced] = useState(
+  const [reduced, setReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const [playing, setPlaying] = useState(!reduced);
@@ -62,6 +57,35 @@ export default function App() {
   const [camera, setCamera] = useState("hero");
   const [reset, setReset] = useState(0);
   const [ready, setReady] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
+  const [visible, setVisible] = useState(() => !document.hidden);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const onUnavailable = useCallback(() => {
+    setUnavailable(true);
+    setReady(false);
+  }, []);
+  useEffect(() => {
+    const preference = matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      setReduced(preference.matches);
+      if (preference.matches) setPlaying(false);
+    };
+    const visibility = () => setVisible(!document.hidden);
+    preference.addEventListener("change", update);
+    document.addEventListener("visibilitychange", visibility);
+    return () => {
+      preference.removeEventListener("change", update);
+      document.removeEventListener("visibilitychange", visibility);
+    };
+  }, []);
+  useEffect(() => {
+    if (sensorId && matchMedia("(max-width: 780px)").matches) {
+      detailRef.current?.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    }
+  }, [sensorId]);
   const onReady = useCallback(() => setReady(true), []);
   const mode = conditions[condition];
   const component = components.find((c) => c.id === selected);
@@ -75,6 +99,7 @@ export default function App() {
     setReset((v) => v + 1);
   }
   function chooseComponent(id: string) {
+    if (view === "sensors") return;
     setSelected((s) => (s === id ? null : id));
     setSensor(null);
   }
@@ -99,6 +124,15 @@ export default function App() {
     );
     setReset((v) => v + 1);
   }
+  function changeCondition(next: Condition) {
+    setCondition(next);
+    setSelected(null);
+    setSensor(null);
+    setCamera(
+      view === "sensors" ? "sensors" : view === "cutaway" ? "cutaway" : "hero",
+    );
+    setReset((v) => v + 1);
+  }
   return (
     <div className="app">
       <a href="#exhibit" className="skip">
@@ -115,7 +149,11 @@ export default function App() {
           P-101<span>Interactive Digital Twin</span>
         </h1>
       </div>
-      <main id="exhibit" className="workspace">
+      <p className="exhibit-intro">
+        Explore the machine, open its casing, then connect a physical change to
+        the evidence. <span>Fictional teaching model · No live telemetry</span>
+      </p>
+      <main id="exhibit" className="workspace" tabIndex={-1}>
         <section className="exhibit" aria-label="Interactive pump exhibit">
           <nav className="view-tabs" aria-label="Model view">
             {views.map((v) => (
@@ -134,56 +172,97 @@ export default function App() {
             data-view={view}
             data-condition={condition}
             data-ready={ready}
+            data-status={
+              unavailable ? "unavailable" : ready ? "ready" : "loading"
+            }
+            data-playing={
+              playing && visible && view !== "exploded" && !unavailable
+            }
             aria-label="3D pump. Drag to orbit and scroll to zoom; use the view and focus buttons for keyboard navigation."
           >
-            <SceneBoundary>
-              <Suspense
-                fallback={<div className="loading">Preparing the exhibit…</div>}
-              >
-                <Scene
-                  {...{
-                    view,
-                    condition,
-                    playing,
-                    flow,
-                    selected,
-                    sensorId,
-                    camera,
-                    reset,
-                    reduced,
-                    onReady,
-                  }}
-                  onSelect={chooseComponent}
-                  onSensor={chooseSensor}
-                />
-              </Suspense>
-            </SceneBoundary>
-            {flow && view === "cutaway" && (
+            {unavailable ? (
+              <StaticExhibit />
+            ) : (
+              <SceneBoundary onUnavailable={onUnavailable}>
+                <Suspense
+                  fallback={
+                    <div className="loading" role="status">
+                      Preparing the exhibit…
+                    </div>
+                  }
+                >
+                  <Scene
+                    {...{
+                      view,
+                      condition,
+                      playing: playing && visible,
+                      flow,
+                      selected,
+                      sensorId,
+                      camera,
+                      reset,
+                      reduced,
+                      onReady,
+                      onUnavailable,
+                    }}
+                    active={visible}
+                    onSelect={chooseComponent}
+                    onSensor={chooseSensor}
+                  />
+                </Suspense>
+              </SceneBoundary>
+            )}
+            {ready && flow && view === "cutaway" && (
               <span className="flow-legend">
                 Suction → Impeller → Volute → Discharge
               </span>
             )}
-            <span className="view-caption">
-              {view === "cutaway"
-                ? "Educational section · front covers removed"
-                : view === "exploded"
-                  ? "Exploded explanation · not a service procedure"
-                  : view === "sensors"
-                    ? "Select a numbered measurement point"
-                    : "Drag to orbit · scroll to zoom"}
-            </span>
+            {ready && (
+              <span className="view-caption">
+                {unavailable
+                  ? "Static healthy assembly · 3D unavailable"
+                  : view === "cutaway"
+                    ? "Educational section · front covers removed"
+                    : view === "exploded"
+                      ? "Exploded explanation · not a service procedure"
+                      : view === "sensors"
+                        ? "Select a numbered measurement point"
+                        : "Drag to orbit · pinch or scroll to zoom · keyboard arrows rotate"}
+              </span>
+            )}
           </div>
           <div className="toolbar">
             <div className="actions">
               <button
                 className="primary"
-                onClick={() => setPlaying(!playing)}
-                aria-pressed={playing}
+                onClick={() => setPlaying((value) => !value)}
+                aria-pressed={playing && view !== "exploded" && ready}
+                disabled={!ready || view === "exploded"}
+                aria-label={
+                  view === "exploded"
+                    ? "Animation paused in exploded view"
+                    : playing
+                      ? "Pause animation"
+                      : "Play animation"
+                }
+                title={
+                  view === "exploded"
+                    ? "Animation unavailable in exploded view"
+                    : playing
+                      ? "Pause animation"
+                      : "Play animation"
+                }
               >
-                {playing ? <Pause size={15} /> : <Play size={15} />}{" "}
-                {playing ? "Pause" : "Play"}
+                {playing && view !== "exploded" ? (
+                  <Pause size={17} />
+                ) : (
+                  <Play size={17} />
+                )}
               </button>
               <button
+                disabled={!ready}
+                aria-label="Reset view"
+                title="Reset view"
                 onClick={() => {
                   setCamera(
                     view === "sensors"
@@ -196,19 +275,41 @@ export default function App() {
                 }}
               >
                 <RotateCcw size={15} />
-                Reset view
               </button>
               <button
-                aria-pressed={flow}
-                className={flow ? "selected" : ""}
-                disabled={view === "exploded"}
-                onClick={() => setFlow(!flow)}
+                aria-pressed={flow && view === "cutaway" && ready}
+                className={flow && view === "cutaway" ? "selected" : ""}
+                disabled={!ready}
+                aria-label={
+                  flow && view === "cutaway" && !unavailable
+                    ? "Hide flow"
+                    : "Show flow"
+                }
+                title={
+                  flow && view === "cutaway" && !unavailable
+                    ? "Hide flow"
+                    : "Show flow"
+                }
+                onClick={() => {
+                  if (flow && view === "cutaway") setFlow(false);
+                  else {
+                    changeView("cutaway");
+                    setFlow(true);
+                  }
+                }}
               >
                 <Waves size={16} />
-                {flow ? "Hide flow" : "Show flow"}
               </button>
             </div>
-            <span>Illustrative flow · Synthetic signals</span>
+            <span>
+              {unavailable
+                ? "3D unavailable · Lessons remain available"
+                : view === "exploded"
+                  ? "Motion paused in exploded view"
+                  : reduced && !playing
+                    ? "Reduced motion · Press Play to animate"
+                    : "Slow-motion illustration"}
+            </span>
           </div>
           <div
             className="conditions"
@@ -220,7 +321,7 @@ export default function App() {
                 key={c}
                 className={condition === c ? "active" : ""}
                 aria-pressed={condition === c}
-                onClick={() => setCondition(c)}
+                onClick={() => changeCondition(c)}
               >
                 {conditions[c].label}
               </button>
@@ -240,10 +341,11 @@ export default function App() {
               : "A centrifugal pump transfers rotational energy from an electric motor into fluid flow and pressure."}
           </p>
           {sensor ? (
-            <div className="detail" aria-live="polite">
+            <div className="detail" ref={detailRef} aria-live="polite">
               <button
                 className="close"
                 aria-label="Close sensor detail"
+                title="Close sensor detail"
                 onClick={() => {
                   setSensor(null);
                   setSelected(null);
@@ -255,12 +357,26 @@ export default function App() {
               <h3>{sensor.name}</h3>
               <p>{sensor.description}</p>
               <span className="detail-unit">{sensor.unit}</span>
+              <button
+                disabled={!ready}
+                className="return-model"
+                onClick={() => {
+                  document
+                    .querySelector<HTMLButtonElement>(
+                      `.sensor-marker[aria-pressed="true"]`,
+                    )
+                    ?.focus();
+                }}
+              >
+                Back to measurement point ↑
+              </button>
             </div>
           ) : component ? (
-            <div className="detail" aria-live="polite">
+            <div className="detail" ref={detailRef} aria-live="polite">
               <button
                 className="close"
                 aria-label="Close component detail"
+                title="Close component detail"
                 onClick={() => setSelected(null)}
               >
                 <X size={16} />
@@ -307,7 +423,11 @@ export default function App() {
           <span className="section-number">01 / CONDITION STUDY</span>
           <h2>{mode.title}</h2>
           {condition !== "normal" && (
-            <button className="focus-button" onClick={focusFault}>
+            <button
+              className="focus-button"
+              onClick={focusFault}
+              disabled={!ready}
+            >
               <Focus size={16} />
               Inspect this condition
             </button>
@@ -329,7 +449,8 @@ export default function App() {
       <footer>
         <p>
           Fictional asset · Simplified single-stage teaching geometry ·
-          Slow-motion illustration
+          Slow-motion illustration · Separate from Industrial Twin Lab
+          experiment data
         </p>
         <div>
           <a href="/models/p101.glb" download>

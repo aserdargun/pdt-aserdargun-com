@@ -14,6 +14,8 @@ for (const match of html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g))
   assert.ok(fs.existsSync(`dist${match[1]}`), match[1]);
 const release = JSON.parse(fs.readFileSync("dist/release.json", "utf8"));
 assert.equal(release.application, "pdt-aserdargun-com");
+assert.equal(release.signals, "synthetic");
+assert.equal(typeof release.dirty, "boolean");
 if (process.env.GITHUB_SHA) assert.equal(release.sha, process.env.GITHUB_SHA);
 assert.equal(
   JSON.parse(fs.readFileSync("dist/staticwebapp.config.json", "utf8"))

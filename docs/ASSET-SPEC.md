@@ -6,11 +6,11 @@ A local React/Vite/Three.js educational exhibit and a reproducible native Blende
 
 - Assembly, capped educational cutaway, semi-exploded explanation, sensor overlay.
 - Nine selectable semantic components; separate motor/pump shafts, flexible coupling and guard, bearing races/balls, seal, six backward-curved impeller blades, volute and hollow piping.
-- Eight sensor anchors, axial/radial direction indicators, accessible equivalent lists.
+- Eight sensor anchors with offset labels and leader lines, axial/radial direction indicators, accessible equivalent lists, and mobile navigation between marker and explanation.
 - Normal, vapor cavitation, bearing raceway wear/thermal overlay, worn impeller, blocked suction strainer.
 - Five camera intents: hero, cutaway, sensor overview, cavitation/impeller detail, bearing detail; additional suction focus.
-- Animated tracer dots and vapor pockets, pause, camera reset, flow visibility, reduced-motion default, 3D failure fallback.
-- Four qualitative synthetic signal strips and physical-change → signal-response → interpretation lessons.
+- Animated tracer dots and vapor pockets, pause, camera reset, keyboard orbit/zoom, flow visibility that opens Cutaway, reactive reduced-motion preference, and static alternatives for load failure, missing WebGL, or context loss. Paused/exploded scenes render on demand; hidden tabs pause simulation.
+- Four qualitative synthetic signal strips with dashed healthy comparisons, explicit independent scales and fixed-sample explanations, plus physical-change → signal-response → interpretation lessons.
 
 ## Files
 
@@ -33,7 +33,7 @@ Roles: `always`, `rotating`, `cover`, `pipe_cover`, `guard`, `healthy`, `healthy
 
 ## Design system
 
-Warm paper `#f1efe9`; ink `#222521`; gray rules `#c5c5ba`; rust accent `#a34422`. Georgia editorial headings, explicit Arial UI typography, thin rules, open viewport plus narrow inspector. No remote font or environment-map dependency. Native 3D studio lighting uses local procedural lightformers.
+Light background `#f7f9f8`; ink `#222521`; gray rules `#cbd3cf`; green interaction accent `#176555`. Compact Georgia headings, Arial UI typography, thin rules, open viewport plus narrow inspector. Fault traces retain rust coloring and the healthy comparison uses a dashed gray line. No remote font or environment-map dependency. Native 3D studio lighting uses local procedural lightformers.
 
 The generated screen translates the approved written scene direction. Real geometry intentionally replaces its rendered pump. Copy is edited for physical accuracy: the volute collects flow, bearings support the shaft, and the short piping installation is explicitly schematic. The selected component can expand the inspector. The required condition lessons continue below the primary screen.
 

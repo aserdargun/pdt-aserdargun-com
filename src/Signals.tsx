@@ -1,5 +1,5 @@
 import { conditions, type Condition } from "./data";
-function trace(condition: Condition, signal: number) {
+export function trace(condition: Condition, signal: number) {
   return Array.from({ length: 90 }, (_, i) => {
     let y = 27 + Math.sin(i * 0.25) * 1.5;
     if (signal === 2) {
@@ -27,33 +27,59 @@ function trace(condition: Condition, signal: number) {
 }
 export default function Signals({ condition }: { condition: Condition }) {
   return (
-    <section className="signals" aria-label="Illustrative signal trends">
-      {["Flow", "Pressure rise", "Vibration", "Bearing temperature"].map(
-        (name, i) => (
-          <div className="signal" key={name}>
-            <div className="signal-name">{name}</div>
-            <svg
-              viewBox="0 0 210 52"
-              role="img"
-              aria-label={`${name}: ${conditions[condition].trends[i]}. Illustrative normalized trace.`}
-            >
-              <path
-                d="M0 3V49H209"
-                stroke="currentColor"
-                opacity=".25"
-                fill="none"
-              />
-              <polyline
-                points={trace(condition, i)}
-                fill="none"
-                stroke={condition === "normal" ? "#294853" : "#a44927"}
-                strokeWidth="1.5"
-              />
-            </svg>
-            <span>{conditions[condition].trends[i]}</span>
-          </div>
-        ),
+    <section className="signal-study" aria-label="Synthetic signal comparison">
+      <div className="signal-heading">
+        <h2>Read the evidence</h2>
+        <span>Authored diagrams · No calibrated time or units</span>
+      </div>
+      {condition !== "normal" && (
+        <p className="signal-key">
+          <span className="baseline-key" /> Healthy baseline{" "}
+          <span className="scenario-key" /> Selected condition
+        </p>
       )}
+      <div className="signals">
+        {["Flow", "Pressure rise", "Vibration", "Bearing temperature"].map(
+          (name, i) => (
+            <div className="signal" key={name}>
+              <div className="signal-name">{name}</div>
+              <svg
+                viewBox="0 0 210 52"
+                role="img"
+                aria-label={`${name}: ${conditions[condition].trends[i]}. Illustrative normalized trace.`}
+              >
+                <path
+                  d="M0 3V49H209"
+                  stroke="currentColor"
+                  opacity=".25"
+                  fill="none"
+                />
+                {condition !== "normal" && (
+                  <polyline
+                    points={trace("normal", i)}
+                    fill="none"
+                    stroke="#686b63"
+                    strokeWidth="1.2"
+                    strokeDasharray="4 4"
+                  />
+                )}
+                <polyline
+                  points={trace(condition, i)}
+                  fill="none"
+                  stroke={condition === "normal" ? "#294853" : "#a44927"}
+                  strokeWidth="1.5"
+                />
+              </svg>
+              <span>{conditions[condition].trends[i]}</span>
+            </div>
+          ),
+        )}
+      </div>
+      <p className="signal-note">
+        Each chart uses its own qualitative scale. Compare a signal with its
+        healthy baseline, not with another chart. These static examples do not
+        advance with Play.
+      </p>
     </section>
   );
 }
