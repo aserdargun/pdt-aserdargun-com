@@ -1,0 +1,23 @@
+[
+  {
+    "id": "concept:centrifugal-pump",
+    "label": {
+      "en": "Centrifugal pump",
+      "tr": "Santrifüj pompa"
+    }
+  },
+  {
+    "id": "concept:condition-monitoring",
+    "label": {
+      "en": "Condition monitoring",
+      "tr": "Durum izleme"
+    }
+  },
+  {
+    "id": "concept:synthetic-signals",
+    "label": {
+      "en": "Synthetic signals",
+      "tr": "Sentetik sinyaller"
+    }
+  }
+]

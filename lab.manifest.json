@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "0.1",
+  "id": "pdt",
+  "code": "pdt",
+  "name": "Pump Digital Twin",
+  "canonicalUrl": "https://pdt.aserdargun.com/",
+  "type": "interactive-lab",
+  "parentApp": "itl",
+  "status": "live",
+  "tagline": {
+    "en": "Inspect the mechanism behind the signal.",
+    "tr": "Sinyalin arkasındaki mekanizmayı incele."
+  },
+  "guidingQuestion": {
+    "en": "What can the signals reveal about normal, and what remains unknown?",
+    "tr": "Normal durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+  },
+  "concepts": [
+    "concept:centrifugal-pump",
+    "concept:condition-monitoring",
+    "concept:synthetic-signals"
+  ],
+  "capabilities": {
+    "play": true,
+    "pause": true,
+    "reset": true,
+    "guidedLesson": true,
+    "experiments": true,
+    "assumptions": true,
+    "evidence": true
+  },
+  "experiments": [
+    {
+      "id": "normal",
+      "title": {
+        "en": "Normal",
+        "tr": "Normal"
+      },
+      "route": "/?condition=normal"
+    },
+    {
+      "id": "cavitation",
+      "title": {
+        "en": "Cavitation",
+        "tr": "Kavitasyon"
+      },
+      "route": "/?condition=cavitation"
+    },
+    {
+      "id": "bearing",
+      "title": {
+        "en": "Bearing wear",
+        "tr": "Rulman aşınması"
+      },
+      "route": "/?condition=bearing"
+    },
+    {
+      "id": "impeller",
+      "title": {
+        "en": "Impeller wear",
+        "tr": "Çark aşınması"
+      },
+      "route": "/?condition=impeller"
+    },
+    {
+      "id": "restriction",
+      "title": {
+        "en": "Suction restriction",
+        "tr": "Emiş kısıtlaması"
+      },
+      "route": "/?condition=restriction"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "pump-conditions",
+      "title": {
+        "en": "Pump condition studies",
+        "tr": "Pompa durum incelemeleri"
+      },
+      "route": "/?lesson=pump-conditions#condition-study"
+    }
+  ],
+  "evidencePolicy": {
+    "summary": {
+      "en": "Fictional asset and synthetic signals. Not plant measurements, CFD, predictive maintenance or engineering certification.",
+      "tr": "Kurgusal varlık ve sentetik sinyaller. Tesis ölçümü, CFD, kestirimci bakım veya mühendislik onayı değildir."
+    },
+    "allowedKinds": [
+      "simulated",
+      "user-input"
+    ]
+  },
+  "assumptions": [
+    {
+      "id": "fictional-asset",
+      "title": {
+        "en": "Fictional teaching asset",
+        "tr": "Kurgusal eğitim varlığı"
+      },
+      "description": {
+        "en": "P-101 is simplified authored geometry, not manufacturer CAD, CFD or a certified machine model. Motion is illustrative and slowed down.",
+        "tr": "P-101 basitleştirilmiş kurgusal geometridir; üretici CAD modeli, CFD veya onaylı makine modeli değildir. Hareket temsili ve yavaşlatılmıştır."
+      }
+    },
+    {
+      "id": "observer-signals",
+      "title": {
+        "en": "Illustrative observer signals",
+        "tr": "Temsili gözlem sinyalleri"
+      },
+      "description": {
+        "en": "Condition traces illustrate authored scenarios. They are not plant telemetry, universal limits or an automatic diagnosis. Observer outputs do not control the machine.",
+        "tr": "Durum izleri kurgulanmış senaryoları açıklar. Tesis telemetrisi, evrensel sınır veya otomatik tanı değildir. Gözlem çıktıları makineyi kontrol etmez."
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "schemaVersion": "0.1",
+      "id": "signals",
+      "kind": "simulated",
+      "verificationStatus": "not-applicable",
+      "label": {
+        "en": "Condition traces and motion",
+        "tr": "Durum izleri ve hareket"
+      },
+      "notes": {
+        "en": "The four signal strips and 3D states are synthetic teaching outputs. A visual correspondence is not diagnostic proof.",
+        "tr": "Dört sinyal şeridi ve 3B durumlar sentetik eğitim çıktılarıdır. Görsel eşleşme tanı kanıtı değildir."
+      },
+      "assumptionRefs": [
+        "fictional-asset",
+        "observer-signals"
+      ]
+    },
+    {
+      "schemaVersion": "0.1",
+      "id": "selection",
+      "kind": "user-input",
+      "verificationStatus": "not-applicable",
+      "label": {
+        "en": "Condition and view selection",
+        "tr": "Durum ve görünüm seçimi"
+      },
+      "notes": {
+        "en": "The selected authored condition determines this study; views expose the same fictional asset.",
+        "tr": "Seçilen kurgusal durum bu incelemeyi belirler; görünümler aynı kurgusal varlığı gösterir."
+      },
+      "assumptionRefs": [
+        "fictional-asset",
+        "observer-signals"
+      ]
+    }
+  ],
+  "related": {
+    "theory": [
+      {
+        "id": "itl",
+        "label": {
+          "en": "Industrial Twin Lab · theory",
+          "tr": "Industrial Twin Lab · kuram"
+        },
+        "url": "https://itl.aserdargun.com/"
+      }
+    ],
+    "labs": [
+      {
+        "id": "hex",
+        "label": {
+          "en": "Inspect another physical system · HEX",
+          "tr": "Başka bir fiziksel sistemi incele · HEX"
+        },
+        "url": "https://hex.aserdargun.com/"
+      }
+    ]
+  }
+}

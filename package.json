@@ -19,7 +19,9 @@
     "lucide-react": "^0.468.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "@aserdargun/lab-core": "file:vendor/aserdargun-lab-core-0.1.0-e5cb8baabeebc68c.tgz",
+    "@aserdargun/lab-ui": "file:vendor/aserdargun-lab-ui-0.1.0-ad3719af737d3971.tgz"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

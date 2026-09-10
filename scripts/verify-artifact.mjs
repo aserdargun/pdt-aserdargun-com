@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createHash} from "node:crypto";
 for (const file of [
   "index.html",
+  "lab.manifest.json",
   "staticwebapp.config.json",
   "release.json",
   "models/p101.glb",
@@ -15,6 +17,7 @@ for (const match of html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g))
 const release = JSON.parse(fs.readFileSync("dist/release.json", "utf8"));
 assert.equal(release.application, "pdt-aserdargun-com");
 assert.equal(release.signals, "synthetic");
+for(const [path,digest] of Object.entries(release.assets)) assert.equal(createHash("sha256").update(fs.readFileSync(`dist/${path}`)).digest("hex"),digest,path);
 assert.equal(typeof release.dirty, "boolean");
 if (process.env.GITHUB_SHA) assert.equal(release.sha, process.env.GITHUB_SHA);
 assert.equal(

@@ -1,3 +1,6 @@
+import {LabShell,LabControlButton} from '@aserdargun/lab-ui';
+import '@aserdargun/lab-ui/styles.css';
+import {manifest,experiments,initialRoute} from './ils/catalog';
 import {
   Component,
   lazy,
@@ -45,8 +48,9 @@ class SceneBoundary extends Component<
   }
 }
 export default function App() {
-  const [view, setView] = useState<View>("assembly");
-  const [condition, setCondition] = useState<Condition>("normal");
+  const [route] = useState(() => initialRoute(location.search));
+  const [view, setView] = useState<View>(route.view);
+  const [condition, setCondition] = useState<Condition>(route.condition);
   const [reduced, setReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -54,7 +58,7 @@ export default function App() {
   const [flow, setFlow] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [sensorId, setSensor] = useState<string | null>(null);
-  const [camera, setCamera] = useState("hero");
+  const [camera, setCamera] = useState(route.view === "sensors" ? "sensors" : route.view === "cutaway" ? "cutaway" : "hero");
   const [reset, setReset] = useState(0);
   const [ready, setReady] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
@@ -233,7 +237,7 @@ export default function App() {
           </div>
           <div className="toolbar">
             <div className="actions">
-              <button
+              <LabControlButton action={playing ? "pause" : "play"} capabilities={manifest.capabilities} locale="en"
                 className="primary"
                 onClick={() => setPlaying((value) => !value)}
                 aria-pressed={playing && view !== "exploded" && ready}
@@ -258,8 +262,8 @@ export default function App() {
                 ) : (
                   <Play size={17} />
                 )}
-              </button>
-              <button
+              </LabControlButton>
+              <LabControlButton action="reset" capabilities={manifest.capabilities} locale="en"
                 disabled={!ready}
                 aria-label="Reset view"
                 title="Reset view"
@@ -275,7 +279,7 @@ export default function App() {
                 }}
               >
                 <RotateCcw size={15} />
-              </button>
+              </LabControlButton>
               <button
                 aria-pressed={flow && view === "cutaway" && ready}
                 className={flow && view === "cutaway" ? "selected" : ""}
@@ -418,7 +422,7 @@ export default function App() {
           </ol>
         </aside>
       </main>
-      <section className="lesson" aria-live="polite">
+      <section id="condition-study" className="lesson" aria-live="polite">
         <div>
           <span className="section-number">01 / CONDITION STUDY</span>
           <h2>{mode.title}</h2>
@@ -446,6 +450,7 @@ export default function App() {
           <p>{mode.interpretation}</p>
         </div>
       </section>
+      <div lang={route.locale}><LabShell manifest={manifest} experiment={experiments.find(e => e.id === condition)!} locale={route.locale} /></div>
       <footer>
         <p>
           Fictional asset · Simplified single-stage teaching geometry ·

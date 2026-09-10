@@ -1,0 +1,257 @@
+[
+  {
+    "schemaVersion": "0.1",
+    "id": "normal",
+    "title": {
+      "en": "Normal",
+      "tr": "Normal"
+    },
+    "guidingQuestion": {
+      "en": "What can the signals reveal about normal, and what remains unknown?",
+      "tr": "Normal durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+    },
+    "description": {
+      "en": "Filled passages, intact surfaces and steady flow through the impeller and volute."
+    },
+    "concepts": [
+      "concept:centrifugal-pump",
+      "concept:condition-monitoring",
+      "concept:synthetic-signals"
+    ],
+    "learningObjectives": [
+      {
+        "en": "These are authored learning signals, not live plant measurements or universal operating limits."
+      }
+    ],
+    "observations": [
+      {
+        "id": "signal-response",
+        "label": {
+          "en": "Signal response",
+          "tr": "Sinyal yanıtı"
+        },
+        "explanation": {
+          "en": "Flow and pressure remain stable. Vibration stays near its baseline and bearing temperature is settled."
+        },
+        "evidenceRefs": [
+          "signals"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "fictional-asset",
+      "observer-signals"
+    ],
+    "evidenceRefs": [
+      "signals",
+      "selection"
+    ],
+    "config": {
+      "condition": "normal"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "cavitation",
+    "title": {
+      "en": "Cavitation",
+      "tr": "Kavitasyon"
+    },
+    "guidingQuestion": {
+      "en": "What can the signals reveal about cavitation, and what remains unknown?",
+      "tr": "Kavitasyon durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+    },
+    "description": {
+      "en": "Vapor pockets form near the impeller eye and blade inlets, then collapse as pressure recovers. Open Cutaway to see them."
+    },
+    "concepts": [
+      "concept:centrifugal-pump",
+      "concept:condition-monitoring",
+      "concept:synthetic-signals"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Vapor cavitation is different from air entering a pipe. Suction pressure, fluid temperature and operating point provide essential context."
+      }
+    ],
+    "observations": [
+      {
+        "id": "signal-response",
+        "label": {
+          "en": "Signal response",
+          "tr": "Sinyal yanıtı"
+        },
+        "explanation": {
+          "en": "Broadband vibration and pressure fluctuations increase. Developed cavitation reduces hydraulic performance in this scenario."
+        },
+        "evidenceRefs": [
+          "signals"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "fictional-asset",
+      "observer-signals"
+    ],
+    "evidenceRefs": [
+      "signals",
+      "selection"
+    ],
+    "config": {
+      "condition": "cavitation"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "bearing",
+    "title": {
+      "en": "Bearing wear",
+      "tr": "Rulman aşınması"
+    },
+    "guidingQuestion": {
+      "en": "What can the signals reveal about bearing wear, and what remains unknown?",
+      "tr": "Rulman aşınması durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+    },
+    "description": {
+      "en": "Localized raceway damage is shown as a magnified wear indication inside the upper bearing section. The warm tint is a thermal overlay."
+    },
+    "concepts": [
+      "concept:centrifugal-pump",
+      "concept:condition-monitoring",
+      "concept:synthetic-signals"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Early bearing damage can precede a temperature rise. An envelope spectrum and speed context would help distinguish its source."
+      }
+    ],
+    "observations": [
+      {
+        "id": "signal-response",
+        "label": {
+          "en": "Signal response",
+          "tr": "Sinyal yanıtı"
+        },
+        "explanation": {
+          "en": "Repeated impacts appear in the vibration trace. This later-stage example also shows a rising housing temperature."
+        },
+        "evidenceRefs": [
+          "signals"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "fictional-asset",
+      "observer-signals"
+    ],
+    "evidenceRefs": [
+      "signals",
+      "selection"
+    ],
+    "config": {
+      "condition": "bearing"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "impeller",
+    "title": {
+      "en": "Impeller wear",
+      "tr": "Çark aşınması"
+    },
+    "guidingQuestion": {
+      "en": "What can the signals reveal about impeller wear, and what remains unknown?",
+      "tr": "Çark aşınması durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+    },
+    "description": {
+      "en": "Worn blade edges replace the healthy geometry. The cutaway exposes the changed hydraulic surfaces."
+    },
+    "concepts": [
+      "concept:centrifugal-pump",
+      "concept:condition-monitoring",
+      "concept:synthetic-signals"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Reduced hydraulic effectiveness and imbalance are different effects. A damaged impeller does not imply the same current change in every system."
+      }
+    ],
+    "observations": [
+      {
+        "id": "signal-response",
+        "label": {
+          "en": "Signal response",
+          "tr": "Sinyal yanıtı"
+        },
+        "explanation": {
+          "en": "The chosen synthetic scenario delivers less flow and pressure rise. Asymmetric material loss may also add rotational vibration."
+        },
+        "evidenceRefs": [
+          "signals"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "fictional-asset",
+      "observer-signals"
+    ],
+    "evidenceRefs": [
+      "signals",
+      "selection"
+    ],
+    "config": {
+      "condition": "impeller"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "restriction",
+    "title": {
+      "en": "Suction restriction",
+      "tr": "Emiş kısıtlaması"
+    },
+    "guidingQuestion": {
+      "en": "What can the signals reveal about suction restriction, and what remains unknown?",
+      "tr": "Emiş kısıtlaması durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+    },
+    "description": {
+      "en": "Debris blocks part of the inlet strainer. Fewer tracers pass through the suction path."
+    },
+    "concepts": [
+      "concept:centrifugal-pump",
+      "concept:condition-monitoring",
+      "concept:synthetic-signals"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Restriction can lead to cavitation, but the two conditions are separate. This example intentionally stops before vapor forms."
+      }
+    ],
+    "observations": [
+      {
+        "id": "signal-response",
+        "label": {
+          "en": "Signal response",
+          "tr": "Sinyal yanıtı"
+        },
+        "explanation": {
+          "en": "Suction pressure downstream of the blockage and delivered flow decrease. Vibration initially remains close to baseline."
+        },
+        "evidenceRefs": [
+          "signals"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "fictional-asset",
+      "observer-signals"
+    ],
+    "evidenceRefs": [
+      "signals",
+      "selection"
+    ],
+    "config": {
+      "condition": "restriction"
+    }
+  }
+]

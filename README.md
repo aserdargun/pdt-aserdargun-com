@@ -59,3 +59,7 @@ Production URL: [P-101 Interactive Digital Twin](https://gray-meadow-083c04f03.3
 Source repository: [aserdargun/pdt-aserdargun-com](https://github.com/aserdargun/pdt-aserdargun-com).
 
 Azure target: `swa-pdt-aserdargun-com`, resource group `rg-pdt-aserdargun-com`, Free SKU in West Europe, explicitly under `aserdargun subscription 3`. Existing portfolio resources remain in their own subscriptions. Deployment uses prebuilt `dist/` and one GitHub Actions production workflow.
+
+## ILS v0.1
+
+The same canonical content-addressed ILS packages in `vendor/` expose the five authored condition studies, assumptions and synthetic evidence. The lesson adapter reuses the existing English condition-study explanations without inventing a new curriculum. `?condition=…&view=…` accepts authored values; `?lesson=pump-conditions#condition-study` opens the study. The ILS panel supports `?lang=tr`; the existing exhibit remains English. No translated scene or exact cross-lab state transfer is claimed. Unsupported `ils` payloads are ignored. Existing animation, camera-reset semantics, geometry, signal generation and fallback behavior remain application-owned.
