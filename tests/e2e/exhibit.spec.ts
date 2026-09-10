@@ -16,7 +16,7 @@ test("all 20 view and condition combinations, nine components and eight sensors"
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page).toHaveTitle("P-101 — Interactive Digital Twin");
+  await expect(page).toHaveTitle("PDT - Interactive Digital Twin");
   await expect(page.locator(".viewport")).toHaveAttribute(
     "data-status",
     "ready",
@@ -232,10 +232,14 @@ for (const width of [320, 390, 768, 1024]) {
 
 test("JavaScript-disabled visitor can access the static model and downloads", async ({
   browser,
+  baseURL,
 }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    baseURL,
+  });
   const page = await context.newPage();
-  await page.goto("http://127.0.0.1:4319");
+  await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(
     page.getByRole("link", { name: /Download the healthy pump/ }),

@@ -23,6 +23,8 @@ npm run preview -- --port 4318 --strictPort
 
 Run `npm run validate` for the complete model, build, artifact and Chromium interaction suite. The browser suite starts an isolated production preview on port 4319 and writes failure evidence to the operating system temporary directory. Install the matching Chromium once with `npx playwright install chromium` if it is not already available.
 
+To run the same interaction suite against a deployed build, set `PDT_BASE_URL` to its HTTPS origin when running `npm run test:e2e`; this disables the local preview server.
+
 The build creates `dist/` with Azure Static Web Apps configuration and a commit-correlated `release.json` that also marks uncommitted local builds with `dirty: true`. There is no backend, external model service or live telemetry. All condition traces are illustrative and synthetic.
 
 ## Editable asset
