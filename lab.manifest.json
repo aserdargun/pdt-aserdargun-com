@@ -12,8 +12,8 @@
     "tr": "Sinyalin arkasındaki mekanizmayı incele."
   },
   "guidingQuestion": {
-    "en": "What can the signals reveal about normal, and what remains unknown?",
-    "tr": "Normal durumunda sinyaller neyi gösterebilir, ne bilinmez kalır?"
+    "en": "How do pump components relate to operating conditions?",
+    "tr": "Pompa bileşenleri çalışma koşullarıyla nasıl ilişkilidir?"
   },
   "concepts": [
     "concept:centrifugal-pump",

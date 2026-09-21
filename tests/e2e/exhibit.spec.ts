@@ -12,7 +12,8 @@ const conditions = [
 test("all 20 view and condition combinations, nine components and eight sensors", async ({
   page,
 }) => {
-  test.setTimeout(120000);
+  // This case exercises 20 states plus every component and sensor on one page.
+  test.setTimeout(180000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");

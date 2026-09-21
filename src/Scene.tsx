@@ -11,16 +11,18 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { sensors, type View, type Condition } from "./data";
+import { exhibitContent, type Locale, type View, type Condition } from "./data";
 import {
   prepareModel,
   applyModelView,
   placeImpeller,
   disposeModelMaterials,
 } from "./modelState";
+import { translator } from "./i18n";
 import StaticExhibit from "./StaticExhibit";
 
 type Props = {
+  locale: Locale;
   view: View;
   condition: Condition;
   playing: boolean;
@@ -52,11 +54,13 @@ function CameraRig({
   reset,
   view,
   reduced,
+  locale,
 }: {
   camera: string;
   reset: number;
   view: View;
   reduced: boolean;
+  locale: Locale;
 }) {
   const controls = useRef<OrbitControlsImpl>(null);
   const { camera: cam, size, gl, invalidate } = useThree();
@@ -80,7 +84,9 @@ function CameraRig({
     element.tabIndex = 0;
     element.setAttribute(
       "aria-label",
-      "Pump camera. Arrow keys rotate; plus and minus zoom. Use Reset view to return.",
+      translator(locale)(
+        "Pump camera. Arrow keys rotate; plus and minus zoom. Use Reset view to return.",
+      ),
     );
     const keydown = (event: KeyboardEvent) => {
       const orbit = controls.current;
@@ -115,7 +121,7 @@ function CameraRig({
     };
     element.addEventListener("keydown", keydown);
     return () => element.removeEventListener("keydown", keydown);
-  }, [gl, invalidate]);
+  }, [gl, invalidate, locale]);
   return (
     <OrbitControls
       ref={controls}
@@ -297,10 +303,13 @@ function Bubbles({ playing, view }: { playing: boolean; view: View }) {
 function SensorMarkers({
   sensorId,
   onSensor,
+  locale,
 }: {
   sensorId: string | null;
   onSensor: (id: string) => void;
+  locale: Locale;
 }) {
+  const { sensors } = exhibitContent(locale);
   const { scene } = useGLTF("/models/p101-teaching.glb");
   scene.updateMatrixWorld(true);
   return (
@@ -338,7 +347,7 @@ function SensorMarkers({
               className={`sensor-marker ${sensorId === s.id ? "active" : ""}`}
               onClick={() => onSensor(s.id)}
               title={`${s.id} · ${s.name}`}
-              aria-label={`Inspect ${s.name}`}
+              aria-label={`${translator(locale)("Inspect")} ${s.name}`}
               aria-pressed={sensorId === s.id}
             >
               {i + 1}
@@ -396,7 +405,7 @@ export default function Scene(props: Props) {
   useEffect(() => {
     if (!supported) props.onUnavailable();
   }, [supported, props.onUnavailable]);
-  if (!supported) return <StaticExhibit />;
+  if (!supported) return <StaticExhibit locale={props.locale} />;
   const animated = props.playing && props.active && props.view !== "exploded";
   const sceneProps = { ...props, playing: animated };
   return (
@@ -406,7 +415,7 @@ export default function Scene(props: Props) {
       dpr={[1, 1.75]}
       camera={{ position: [2.6, 1.8, 4.1], fov: 36, near: 0.05, far: 50 }}
       gl={{ antialias: true, alpha: true, preserveDrawingBuffer: false }}
-      fallback={<StaticExhibit />}
+      fallback={<StaticExhibit locale={props.locale} />}
     >
       <ContextHealth onUnavailable={props.onUnavailable} />
       <ambientLight intensity={0.65} />
@@ -419,7 +428,9 @@ export default function Scene(props: Props) {
       <Suspense
         fallback={
           <Html center>
-            <span className="loading">Preparing the exhibit…</span>
+            <span className="loading">
+              {translator(props.locale)("Preparing the exhibit…")}
+            </span>
           </Html>
         }
       >

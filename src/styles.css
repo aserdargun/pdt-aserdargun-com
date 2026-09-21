@@ -805,3 +805,24 @@ footer p {
     line-height: 1.5;
   }
 }
+
+.header-links,
+.language-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.language-switch button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.language-switch button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.view-tabs button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

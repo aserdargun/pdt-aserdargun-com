@@ -1,8 +1,28 @@
+import { sourceIdentity } from "./source-identity.mjs";
 import { execFileSync } from "node:child_process";
-import { writeFileSync,copyFileSync,readFileSync,readdirSync } from "node:fs";
-import {createHash} from "node:crypto";
-copyFileSync("lab.manifest.json","dist/lab.manifest.json");
-const assets=Object.fromEntries(readdirSync("dist",{recursive:true,withFileTypes:true}).filter(e=>e.isFile()&&!["release.json","staticwebapp.config.json"].includes(e.name)).map(e=>{const p=e.parentPath+"/"+e.name;return [p.replace(/^dist\//,""),createHash("sha256").update(readFileSync(p)).digest("hex")]}));
+import {
+  writeFileSync,
+  copyFileSync,
+  readFileSync,
+  readdirSync,
+} from "node:fs";
+import { createHash } from "node:crypto";
+copyFileSync("lab.manifest.json", "dist/lab.manifest.json");
+const assets = Object.fromEntries(
+  readdirSync("dist", { recursive: true, withFileTypes: true })
+    .filter(
+      (e) =>
+        e.isFile() &&
+        !["release.json", "staticwebapp.config.json"].includes(e.name),
+    )
+    .map((e) => {
+      const p = e.parentPath + "/" + e.name;
+      return [
+        p.replace(/^dist\//, ""),
+        createHash("sha256").update(readFileSync(p)).digest("hex"),
+      ];
+    }),
+);
 let sha = process.env.GITHUB_SHA;
 let dirty = false;
 if (!sha) {
@@ -26,6 +46,7 @@ writeFileSync(
     {
       application: "pdt-aserdargun-com",
       sha,
+      sourceHash: sourceIdentity().sourceHash,
       dirty,
       builtAt: new Date().toISOString(),
       signals: "synthetic",

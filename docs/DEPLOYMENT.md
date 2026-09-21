@@ -1,7 +1,8 @@
 # Publication contract
 
 - Public source: https://github.com/aserdargun/pdt-aserdargun-com
-- Production: https://gray-meadow-083c04f03.3.azurestaticapps.net
+- Canonical public URL: https://pdt.aserdargun.com/
+- Azure fallback: https://gray-meadow-083c04f03.3.azurestaticapps.net
 - Branch: `main`
 - Azure subscription: `aserdargun subscription 3` (explicitly selected; no migration of existing applications)
 - Resource group: `rg-pdt-aserdargun-com`
@@ -17,4 +18,4 @@ The repository was created and pushed publicly before Azure provisioning. The ne
 
 Each release must pass locked installation, model/state tests, TypeScript, Vite build and artifact checks. `/release.json` exposes the deployed commit SHA and UTC build time, enabling comparison to the successful GitHub Actions run. Complete verification also requires the Azure production environment to be Ready, live asset MIME checks, and browser interaction checks. This document specifies the release contract; it is not a substitute for a successful workflow run.
 
-No custom domain or DNS configuration is part of this release. The separate Industrial Twin Lab publication is unchanged.
+The canonical custom domain is `pdt.aserdargun.com`. A future publication must verify authoritative DNS, TLS, the deployed release identity and representative browser flows; the configured URL alone is not evidence of current reachability. Local content edits do not authorize publication or DNS changes. Industrial Twin Lab remains a separate application.

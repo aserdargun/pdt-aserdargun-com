@@ -1,4 +1,5 @@
-import { conditions, type Condition } from "./data";
+import { translator } from "./i18n";
+import { exhibitContent, type Locale, type Condition } from "./data";
 export function trace(condition: Condition, signal: number) {
   return Array.from({ length: 90 }, (_, i) => {
     let y = 27 + Math.sin(i * 0.25) * 1.5;
@@ -25,60 +26,74 @@ export function trace(condition: Condition, signal: number) {
     return `${i * 2.3},${y}`;
   }).join(" ");
 }
-export default function Signals({ condition }: { condition: Condition }) {
+export default function Signals({
+  condition,
+  locale,
+}: {
+  condition: Condition;
+  locale: Locale;
+}) {
+  const t = translator(locale);
+  const { conditions } = exhibitContent(locale);
   return (
-    <section className="signal-study" aria-label="Synthetic signal comparison">
+    <section
+      className="signal-study"
+      aria-label={t("Synthetic signal comparison")}
+    >
       <div className="signal-heading">
-        <h2>Read the evidence</h2>
-        <span>Authored diagrams · No calibrated time or units</span>
+        <h2>{t("Read the evidence")}</h2>
+        <span>{t("Authored diagrams · No calibrated time or units")}</span>
       </div>
       {condition !== "normal" && (
         <p className="signal-key">
-          <span className="baseline-key" /> Healthy baseline{" "}
-          <span className="scenario-key" /> Selected condition
+          <span className="baseline-key" /> {t("Healthy baseline")}{" "}
+          <span className="scenario-key" /> {t("Selected condition")}
         </p>
       )}
       <div className="signals">
-        {["Flow", "Pressure rise", "Vibration", "Bearing temperature"].map(
-          (name, i) => (
-            <div className="signal" key={name}>
-              <div className="signal-name">{name}</div>
-              <svg
-                viewBox="0 0 210 52"
-                role="img"
-                aria-label={`${name}: ${conditions[condition].trends[i]}. Illustrative normalized trace.`}
-              >
-                <path
-                  d="M0 3V49H209"
-                  stroke="currentColor"
-                  opacity=".25"
-                  fill="none"
-                />
-                {condition !== "normal" && (
-                  <polyline
-                    points={trace("normal", i)}
-                    fill="none"
-                    stroke="#686b63"
-                    strokeWidth="1.2"
-                    strokeDasharray="4 4"
-                  />
-                )}
+        {[
+          t("Flow"),
+          t("Pressure rise"),
+          t("Vibration"),
+          t("Bearing temperature"),
+        ].map((name, i) => (
+          <div className="signal" key={name}>
+            <div className="signal-name">{name}</div>
+            <svg
+              viewBox="0 0 210 52"
+              role="img"
+              aria-label={`${name}: ${conditions[condition].trends[i]}. ${t("Illustrative normalized trace.")}`}
+            >
+              <path
+                d="M0 3V49H209"
+                stroke="currentColor"
+                opacity=".25"
+                fill="none"
+              />
+              {condition !== "normal" && (
                 <polyline
-                  points={trace(condition, i)}
+                  points={trace("normal", i)}
                   fill="none"
-                  stroke={condition === "normal" ? "#294853" : "#a44927"}
-                  strokeWidth="1.5"
+                  stroke="#686b63"
+                  strokeWidth="1.2"
+                  strokeDasharray="4 4"
                 />
-              </svg>
-              <span>{conditions[condition].trends[i]}</span>
-            </div>
-          ),
-        )}
+              )}
+              <polyline
+                points={trace(condition, i)}
+                fill="none"
+                stroke={condition === "normal" ? "#294853" : "#a44927"}
+                strokeWidth="1.5"
+              />
+            </svg>
+            <span>{conditions[condition].trends[i]}</span>
+          </div>
+        ))}
       </div>
       <p className="signal-note">
-        Each chart uses its own qualitative scale. Compare a signal with its
-        healthy baseline, not with another chart. These static examples do not
-        advance with Play.
+        {t(
+          "Each chart uses its own qualitative scale. Compare a signal with its healthy baseline, not with another chart. These static examples do not advance with Play.",
+        )}
       </p>
     </section>
   );

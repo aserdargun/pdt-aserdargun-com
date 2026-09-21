@@ -19,7 +19,8 @@ A local React/Vite/Three.js educational exhibit and a reproducible native Blende
 - `public/models/p101.glb`: default healthy assembled export, no duplicate fault geometry.
 - `public/models/p101-teaching.glb`: all educational variants, with runtime visibility driven by `extras.role` and `extras.componentId`.
 - `public/p101-poster.png`: actual Cycles render of the model; also used for WebGL/error fallback.
-- `src/data.ts`: semantic component, sensor and scenario definitions.
+- `src/data.ts`: shared semantic component, sensor and scenario definitions with equivalent English/Turkish explanations.
+- `src/i18n.ts`: English/Turkish controls, accessible labels and fallback text.
 - `src/Scene.tsx`: runtime view rules, cameras, flow, vapor and selection.
 - `docs/concept.png`: generated full-screen art-direction reference, not an in-product raster UI.
 
@@ -41,13 +42,13 @@ The generated screen translates the approved written scene direction. Real geome
 
 Cavitation: enlarged illustrative vapor pockets at the eye/blade inlet, collapsing downstream. No outside air injection and no immediate permanent damage. Bearing mode: magnified dark raceway wear marks plus a clearly described later-stage thermal overlay; it is not a fracture or material-removal simulation. Impeller mode: a distinct eroded blade mesh. Restriction: localized debris at the exposed upstream strainer, fewer flow tracers, no automatic cavitation.
 
-Flow traces follow an authored path. Particle size, display speed and fault severity are visual teaching choices. The plots are qualitative normalized diagrams without time or physical-unit calibration. Pressure rise is not calculated pump head. Motor surface temperature does not imply winding temperature. Electrical power is a feeder measurement represented near the terminal box.
+Flow traces follow an authored path. Particle size, display speed and fault severity are visual teaching choices. The plots are qualitative normalized diagrams without time or physical-unit calibration. Pressure rise is not calculated pump head. Motor surface temperature does not imply winding temperature. Electrical power is a feeder measurement represented near the terminal box. Sensor cards label representative units without providing readings. No dB values or acoustic model are supplied. TR/EN controls preserve the active selection; the URL carries the language, condition and view.
 
 ## MVP limits and V2
 
 This is an educational MVP, not a manufacturer CAD replica or engineering verification. There is no backend, plant connection, CFD, acoustic simulation, real predictive model, or maintenance recommendation. Hosting is handled separately by the publication workflow. The service-inspired exploded arrangement is not a maintenance sequence. Pipe lengths are compressed and the flow meter does not represent a qualified installation.
 
-V2: manufacturer reference dimensions and tolerances; bearing defect geometry/envelope spectra; pump/system curves and quantified operating-point assumptions; fluid temperature and NPSH teaching; CFD-derived fields; collision-aware annotation layout; continuous section plane; LOD/mesh merging; bilingual publication integration; severity progression and combined faults. Current web geometry fits the triangle/transfer budget; static small-part draw-call optimization remains a V2 opportunity.
+V2: manufacturer reference dimensions and tolerances; bearing defect geometry/envelope spectra; pump/system curves and quantified operating-point assumptions; fluid temperature and NPSH teaching; CFD-derived fields; collision-aware annotation layout; continuous section plane; LOD/mesh merging; severity progression and combined faults. Current web geometry fits the triangle/transfer budget; static small-part draw-call optimization remains a V2 opportunity.
 
 ## Engineering and export references
 

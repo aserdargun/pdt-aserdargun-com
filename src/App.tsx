@@ -1,6 +1,6 @@
-import {LabShell,LabControlButton} from '@aserdargun/lab-ui';
-import '@aserdargun/lab-ui/styles.css';
-import {manifest,experiments,initialRoute} from './ils/catalog';
+import { LabShell, LabControlButton } from "@aserdargun/lab-ui";
+import "@aserdargun/lab-ui/styles.css";
+import { manifest, experiments, initialRoute } from "./ils/catalog";
 import {
   Component,
   lazy,
@@ -21,19 +21,13 @@ import {
   Download,
   X,
 } from "lucide-react";
-import {
-  components,
-  sensors,
-  conditions,
-  views,
-  type View,
-  type Condition,
-} from "./data";
+import { exhibitContent, type Locale, type View, type Condition } from "./data";
+import { translator } from "./i18n";
 import Signals from "./Signals";
 import StaticExhibit from "./StaticExhibit";
 const Scene = lazy(() => import("./Scene"));
 class SceneBoundary extends Component<
-  { children: ReactNode; onUnavailable: () => void },
+  { children: ReactNode; onUnavailable: () => void; locale: Locale },
   { error: boolean }
 > {
   state = { error: false };
@@ -44,13 +38,32 @@ class SceneBoundary extends Component<
     this.props.onUnavailable();
   }
   render() {
-    return this.state.error ? <StaticExhibit /> : this.props.children;
+    return this.state.error ? (
+      <StaticExhibit locale={this.props.locale} />
+    ) : (
+      this.props.children
+    );
   }
 }
 export default function App() {
   const [route] = useState(() => initialRoute(location.search));
+  const [locale, setLocale] = useState<Locale>(route.locale);
+  const t = translator(locale);
+  const { components, sensors, conditions, views } = exhibitContent(locale);
   const [view, setView] = useState<View>(route.view);
   const [condition, setCondition] = useState<Condition>(route.condition);
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.title =
+      locale === "tr"
+        ? "PDT - Etkileşimli Dijital İkiz"
+        : "PDT - Interactive Digital Twin";
+    const url = new URL(location.href);
+    url.searchParams.set("lang", locale);
+    url.searchParams.set("condition", condition);
+    url.searchParams.set("view", view);
+    history.replaceState(history.state, "", url);
+  }, [locale, condition, view]);
   const [reduced, setReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -58,7 +71,13 @@ export default function App() {
   const [flow, setFlow] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [sensorId, setSensor] = useState<string | null>(null);
-  const [camera, setCamera] = useState(route.view === "sensors" ? "sensors" : route.view === "cutaway" ? "cutaway" : "hero");
+  const [camera, setCamera] = useState(
+    route.view === "sensors"
+      ? "sensors"
+      : route.view === "cutaway"
+        ? "cutaway"
+        : "hero",
+  );
   const [reset, setReset] = useState(0);
   const [ready, setReady] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
@@ -140,26 +159,59 @@ export default function App() {
   return (
     <div className="app">
       <a href="#exhibit" className="skip">
-        Skip to exhibit
+        {t("Skip to exhibit")}
       </a>
       <header>
         <a href="https://itl.aserdargun.com" target="_blank" rel="noreferrer">
           aserdargun / Industrial Twin Lab <ArrowUpRight size={13} />
         </a>
-        <span>Research exhibit</span>
+        <div className="header-links">
+          <a
+            href={
+              locale === "tr"
+                ? "https://aserdargun.com/tr/"
+                : "https://aserdargun.com/"
+            }
+          >
+            {t("Portfolio")} <ArrowUpRight size={13} />
+          </a>
+          <nav
+            className="language-switch"
+            aria-label={locale === "tr" ? "Dil" : "Language"}
+          >
+            <button
+              lang="tr"
+              aria-label="Türkçe"
+              aria-pressed={locale === "tr"}
+              onClick={() => setLocale("tr")}
+            >
+              TR
+            </button>
+            <button
+              lang="en"
+              aria-label="English"
+              aria-pressed={locale === "en"}
+              onClick={() => setLocale("en")}
+            >
+              EN
+            </button>
+          </nav>
+        </div>
       </header>
       <div className="title">
         <h1>
-          P-101<span>Interactive Digital Twin</span>
+          P-101<span>{t("Interactive Digital Twin")}</span>
         </h1>
       </div>
       <p className="exhibit-intro">
-        Explore the machine, open its casing, then connect a physical change to
-        the evidence. <span>Fictional teaching model · No live telemetry</span>
+        {t(
+          "Explore the machine, open its casing, then connect a physical change to the evidence.",
+        )}{" "}
+        <span>{t("Fictional teaching model · No live telemetry")}</span>
       </p>
       <main id="exhibit" className="workspace" tabIndex={-1}>
-        <section className="exhibit" aria-label="Interactive pump exhibit">
-          <nav className="view-tabs" aria-label="Model view">
+        <section className="exhibit" aria-label={t("Interactive pump exhibit")}>
+          <nav className="view-tabs" aria-label={t("Model view")}>
             {views.map((v) => (
               <button
                 key={v.id}
@@ -182,22 +234,25 @@ export default function App() {
             data-playing={
               playing && visible && view !== "exploded" && !unavailable
             }
-            aria-label="3D pump. Drag to orbit and scroll to zoom; use the view and focus buttons for keyboard navigation."
+            aria-label={t(
+              "3D pump. Drag to orbit and scroll to zoom; use the view and focus buttons for keyboard navigation.",
+            )}
           >
             {unavailable ? (
-              <StaticExhibit />
+              <StaticExhibit locale={locale} />
             ) : (
-              <SceneBoundary onUnavailable={onUnavailable}>
+              <SceneBoundary onUnavailable={onUnavailable} locale={locale}>
                 <Suspense
                   fallback={
                     <div className="loading" role="status">
-                      Preparing the exhibit…
+                      {t("Preparing the exhibit…")}
                     </div>
                   }
                 >
                   <Scene
                     {...{
                       view,
+                      locale,
                       condition,
                       playing: playing && visible,
                       flow,
@@ -218,43 +273,48 @@ export default function App() {
             )}
             {ready && flow && view === "cutaway" && (
               <span className="flow-legend">
-                Suction → Impeller → Volute → Discharge
+                {t("Suction → Impeller → Volute → Discharge")}
               </span>
             )}
             {ready && (
               <span className="view-caption">
                 {unavailable
-                  ? "Static healthy assembly · 3D unavailable"
+                  ? t("Static healthy assembly · 3D unavailable")
                   : view === "cutaway"
-                    ? "Educational section · front covers removed"
+                    ? t("Educational section · front covers removed")
                     : view === "exploded"
-                      ? "Exploded explanation · not a service procedure"
+                      ? t("Exploded explanation · not a service procedure")
                       : view === "sensors"
-                        ? "Select a numbered measurement point"
-                        : "Drag to orbit · pinch or scroll to zoom · keyboard arrows rotate"}
+                        ? t("Select a numbered measurement point")
+                        : t(
+                            "Drag to orbit · pinch or scroll to zoom · keyboard arrows rotate",
+                          )}
               </span>
             )}
           </div>
           <div className="toolbar">
             <div className="actions">
-              <LabControlButton action={playing ? "pause" : "play"} capabilities={manifest.capabilities} locale="en"
+              <LabControlButton
+                action={playing ? "pause" : "play"}
+                capabilities={manifest.capabilities}
+                locale={locale}
                 className="primary"
                 onClick={() => setPlaying((value) => !value)}
                 aria-pressed={playing && view !== "exploded" && ready}
                 disabled={!ready || view === "exploded"}
                 aria-label={
                   view === "exploded"
-                    ? "Animation paused in exploded view"
+                    ? t("Animation paused in exploded view")
                     : playing
-                      ? "Pause animation"
-                      : "Play animation"
+                      ? t("Pause animation")
+                      : t("Play animation")
                 }
                 title={
                   view === "exploded"
-                    ? "Animation unavailable in exploded view"
+                    ? t("Animation unavailable in exploded view")
                     : playing
-                      ? "Pause animation"
-                      : "Play animation"
+                      ? t("Pause animation")
+                      : t("Play animation")
                 }
               >
                 {playing && view !== "exploded" ? (
@@ -263,10 +323,13 @@ export default function App() {
                   <Play size={17} />
                 )}
               </LabControlButton>
-              <LabControlButton action="reset" capabilities={manifest.capabilities} locale="en"
+              <LabControlButton
+                action="reset"
+                capabilities={manifest.capabilities}
+                locale={locale}
                 disabled={!ready}
-                aria-label="Reset view"
-                title="Reset view"
+                aria-label={t("Reset view")}
+                title={t("Reset view")}
                 onClick={() => {
                   setCamera(
                     view === "sensors"
@@ -286,13 +349,13 @@ export default function App() {
                 disabled={!ready}
                 aria-label={
                   flow && view === "cutaway" && !unavailable
-                    ? "Hide flow"
-                    : "Show flow"
+                    ? t("Hide flow")
+                    : t("Show flow")
                 }
                 title={
                   flow && view === "cutaway" && !unavailable
-                    ? "Hide flow"
-                    : "Show flow"
+                    ? t("Hide flow")
+                    : t("Show flow")
                 }
                 onClick={() => {
                   if (flow && view === "cutaway") setFlow(false);
@@ -307,18 +370,18 @@ export default function App() {
             </div>
             <span>
               {unavailable
-                ? "3D unavailable · Lessons remain available"
+                ? t("3D unavailable · Lessons remain available")
                 : view === "exploded"
-                  ? "Motion paused in exploded view"
+                  ? t("Motion paused in exploded view")
                   : reduced && !playing
-                    ? "Reduced motion · Press Play to animate"
-                    : "Slow-motion illustration"}
+                    ? t("Reduced motion · Press Play to animate")
+                    : t("Slow-motion illustration")}
             </span>
           </div>
           <div
             className="conditions"
             role="group"
-            aria-label="Operating condition"
+            aria-label={t("Operating condition")}
           >
             {(Object.keys(conditions) as Condition[]).map((c) => (
               <button
@@ -331,25 +394,34 @@ export default function App() {
               </button>
             ))}
           </div>
-          <Signals condition={condition} />
+          <Signals condition={condition} locale={locale} />
+          <p className="signal-note">
+            {t(
+              "Geometry in meters · Sensor units describe measurement types; no live readings. Signal strips have no calibrated units. No acoustic model or dB values.",
+            )}
+          </p>
         </section>
-        <aside className="inspector" aria-label="Learning inspector">
+        <aside className="inspector" aria-label={t("Learning inspector")}>
           <h2>
             {view === "sensors"
-              ? "A place for every signal"
-              : "The anatomy of flow"}
+              ? t("A place for every signal")
+              : t("The anatomy of flow")}
           </h2>
           <p className="intro">
             {view === "sensors"
-              ? "Eight measurement locations connect the physical machine to its operational evidence."
-              : "A centrifugal pump transfers rotational energy from an electric motor into fluid flow and pressure."}
+              ? t(
+                  "Eight measurement locations connect the physical machine to its operational evidence.",
+                )
+              : t(
+                  "A centrifugal pump transfers rotational energy from an electric motor into fluid flow and pressure.",
+                )}
           </p>
           {sensor ? (
             <div className="detail" ref={detailRef} aria-live="polite">
               <button
                 className="close"
-                aria-label="Close sensor detail"
-                title="Close sensor detail"
+                aria-label={t("Close sensor detail")}
+                title={t("Close sensor detail")}
                 onClick={() => {
                   setSensor(null);
                   setSelected(null);
@@ -372,15 +444,15 @@ export default function App() {
                     ?.focus();
                 }}
               >
-                Back to measurement point ↑
+                {t("Back to measurement point ↑")}
               </button>
             </div>
           ) : component ? (
             <div className="detail" ref={detailRef} aria-live="polite">
               <button
                 className="close"
-                aria-label="Close component detail"
-                title="Close component detail"
+                aria-label={t("Close component detail")}
+                title={t("Close component detail")}
                 onClick={() => setSelected(null)}
               >
                 <X size={16} />
@@ -424,7 +496,7 @@ export default function App() {
       </main>
       <section id="condition-study" className="lesson" aria-live="polite">
         <div>
-          <span className="section-number">01 / CONDITION STUDY</span>
+          <span className="section-number">{t("01 / CONDITION STUDY")}</span>
           <h2>{mode.title}</h2>
           {condition !== "normal" && (
             <button
@@ -433,37 +505,41 @@ export default function App() {
               disabled={!ready}
             >
               <Focus size={16} />
-              Inspect this condition
+              {t("Inspect this condition")}
             </button>
           )}
         </div>
         <div>
-          <h3>Physical change</h3>
+          <h3>{t("Physical change")}</h3>
           <p>{mode.physical}</p>
         </div>
         <div>
-          <h3>Signal response</h3>
+          <h3>{t("Signal response")}</h3>
           <p>{mode.signal}</p>
         </div>
         <div>
-          <h3>What the evidence means</h3>
+          <h3>{t("What the evidence means")}</h3>
           <p>{mode.interpretation}</p>
         </div>
       </section>
-      <div lang={route.locale}><LabShell manifest={manifest} experiment={experiments.find(e => e.id === condition)!} locale={route.locale} /></div>
+      <LabShell
+        manifest={manifest}
+        experiment={experiments.find((e) => e.id === condition)!}
+        locale={locale}
+      />
       <footer>
         <p>
-          Fictional asset · Simplified single-stage teaching geometry ·
-          Slow-motion illustration · Separate from Industrial Twin Lab
-          experiment data
+          {t(
+            "Fictional asset · Simplified single-stage teaching geometry · Slow-motion illustration · Separate from Industrial Twin Lab experiment data",
+          )}
         </p>
         <div>
           <a href="/models/p101.glb" download>
             <Download size={14} />
-            Modular GLB
+            {t("Healthy assembly GLB")}
           </a>
           <a href="/p101-poster.png" download>
-            Hero render <ArrowUpRight size={13} />
+            {t("Hero render")} <ArrowUpRight size={13} />
           </a>
           <a href="https://itl.aserdargun.com" target="_blank" rel="noreferrer">
             Industrial Twin Lab <ArrowUpRight size={13} />

@@ -1,6 +1,7 @@
+import { sourceIdentity } from "./source-identity.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {createHash} from "node:crypto";
+import { createHash } from "node:crypto";
 for (const file of [
   "index.html",
   "lab.manifest.json",
@@ -17,7 +18,25 @@ for (const match of html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g))
 const release = JSON.parse(fs.readFileSync("dist/release.json", "utf8"));
 assert.equal(release.application, "pdt-aserdargun-com");
 assert.equal(release.signals, "synthetic");
-for(const [path,digest] of Object.entries(release.assets)) assert.equal(createHash("sha256").update(fs.readFileSync(`dist/${path}`)).digest("hex"),digest,path);
+const source = sourceIdentity();
+assert.equal(
+  release.sha,
+  process.env.GITHUB_SHA || source.sha,
+  "Build commit differs from this checkout; rebuild.",
+);
+assert.equal(
+  release.sourceHash,
+  source.sourceHash,
+  "Source changed since build; rebuild before verification.",
+);
+for (const [path, digest] of Object.entries(release.assets))
+  assert.equal(
+    createHash("sha256")
+      .update(fs.readFileSync(`dist/${path}`))
+      .digest("hex"),
+    digest,
+    path,
+  );
 assert.equal(typeof release.dirty, "boolean");
 if (process.env.GITHUB_SHA) assert.equal(release.sha, process.env.GITHUB_SHA);
 assert.equal(
