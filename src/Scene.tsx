@@ -211,7 +211,7 @@ function Flow({
   const paths = useMemo(
     () =>
       Array.from({ length: 6 }, (_, i) => {
-        let a = (i * Math.PI) / 3;
+        const a = (i * Math.PI) / 3;
         return new THREE.CatmullRomCurve3([
           new THREE.Vector3(
             1.48,
