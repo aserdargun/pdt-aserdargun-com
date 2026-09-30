@@ -826,3 +826,20 @@ footer p {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+/* Guided lesson: the ?lesson= deep link now opens this instead of doing nothing. */
+.guided-lesson { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 28px; padding: 28px; margin: 24px 0; border: 1px solid var(--line); border-radius: 2px; }
+.guided-lesson[data-guided="false"] { border-style: dashed; }
+.guided-lesson h2 { margin: 8px 0 6px; font-size: 20px; }
+.guided-lesson h3 { margin: 0 0 8px; font-size: 14px; }
+.guided-lesson p { margin: 0; line-height: 1.6; }
+.guided-lesson__progress { color: var(--muted); font-family: var(--mono, monospace); font-size: 12px; }
+.guided-lesson__steps { list-style: none; display: grid; gap: 6px; margin: 14px 0 0; padding: 0; }
+.guided-step { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: baseline; padding: 8px 10px; border: 1px solid transparent; background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.guided-step span { font-family: var(--mono, monospace); font-size: 11px; color: var(--muted); }
+.guided-step:hover { border-color: var(--line); }
+.guided-step[data-active="true"] { border-color: currentColor; }
+.guided-step[data-active="true"] span { color: inherit; }
+@media (max-width: 900px) {
+  .guided-lesson { grid-template-columns: 1fr; }
+}

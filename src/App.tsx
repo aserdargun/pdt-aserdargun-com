@@ -1,6 +1,6 @@
 import { LabShell, LabControlButton } from "@aserdargun/lab-ui";
 import "@aserdargun/lab-ui/styles.css";
-import { manifest, experiments, initialRoute } from "./ils/catalog";
+import { manifest, experiments, initialRoute, guidedLesson } from "./ils/catalog";
 import {
   Component,
   lazy,
@@ -52,6 +52,19 @@ export default function App() {
   const { components, sensors, conditions, views } = exhibitContent(locale);
   const [view, setView] = useState<View>(route.view);
   const [condition, setCondition] = useState<Condition>(route.condition);
+  // `?lesson=pump-conditions` opens the guided lesson. The route flag was computed
+  // by initialRoute() but never consumed, so the deep link did nothing.
+  const [guided, setGuided] = useState(route.lesson);
+  const guidedStep = guidedLesson.steps.findIndex((step) => step.id === condition);
+  // Evidence wording comes from lab.manifest.json so the contract stays the single
+  // source of truth instead of a hardcoded string that can drift from it.
+  const evidenceRecord = manifest.evidence.find((record) => record.id === "signals");
+  const manifestAssumptions = [
+    ...manifest.assumptions.map((entry) => `${entry.title[locale]}: ${entry.description[locale]}`),
+    ...(evidenceRecord?.notes
+      ? [`${evidenceRecord.label[locale]}: ${evidenceRecord.notes[locale]}`]
+      : []),
+  ].join(" · ");
   useEffect(() => {
     document.documentElement.lang = locale;
     document.title =
@@ -494,6 +507,39 @@ export default function App() {
           </ol>
         </aside>
       </main>
+      <section id="guided-lesson" className="guided-lesson" aria-live="polite" data-guided={guided ? "true" : "false"}>
+        <div>
+          <span className="section-number">{t("GUIDED LESSON")}</span>
+          <h2>{guidedLesson.title[locale]}</h2>
+          <p className="guided-lesson__progress">
+            {guidedLesson.steps.length > 0
+              ? `${Math.max(0, guidedStep) + 1} / ${guidedLesson.steps.length} · ${guidedLesson.steps[Math.max(0, guidedStep)]?.title[locale] ?? ""}`
+              : ""}
+          </p>
+          <div className="guided-lesson__steps">
+            {guidedLesson.steps.map((step, index) => (
+              <button
+                key={step.id}
+                type="button"
+                className="guided-step"
+                data-active={index === guidedStep ? "true" : "false"}
+                aria-current={index === guidedStep ? "step" : undefined}
+                onClick={() => setCondition((experiments.find((e) => e.id === step.id)?.config.condition ?? condition) as Condition)}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {step.title[locale]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3>{t("What this step shows")}</h3>
+          <p>{guidedLesson.steps[Math.max(0, guidedStep)]?.explanation[locale]}</p>
+          <button type="button" className="focus-button" onClick={() => setGuided((value) => !value)}>
+            {guided ? t("Leave guided lesson") : t("Start guided lesson")}
+          </button>
+        </div>
+      </section>
       <section id="condition-study" className="lesson" aria-live="polite">
         <div>
           <span className="section-number">{t("01 / CONDITION STUDY")}</span>
@@ -528,11 +574,7 @@ export default function App() {
         locale={locale}
       />
       <footer>
-        <p>
-          {t(
-            "Fictional asset · Simplified single-stage teaching geometry · Slow-motion illustration · Separate from Industrial Twin Lab experiment data",
-          )}
-        </p>
+        <p>{manifestAssumptions}</p>
         <div>
           <a href="/models/p101.glb" download>
             <Download size={14} />

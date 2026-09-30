@@ -84,6 +84,10 @@ export const turkish = {
   "Geometry in meters · Sensor units describe measurement types; no live readings. Signal strips have no calibrated units. No acoustic model or dB values.":
     "Geometri metre cinsindedir · Sensör birimleri ölçüm türlerini açıklar; canlı ölçüm yoktur. Sinyal şeritlerinin kalibre birimi yoktur. Akustik model veya dB değeri yoktur.",
   Inspect: "İncele",
+  "GUIDED LESSON": "REHBERLİ DERS",
+  "What this step shows": "Bu adım neyi gösterir",
+  "Start guided lesson": "Rehberli dersi başlat",
+  "Leave guided lesson": "Rehberli dersten çık",
 } as const;
 
 export function translator(locale: Locale) {
