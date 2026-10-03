@@ -88,6 +88,9 @@ export const turkish = {
   "What this step shows": "Bu adım neyi gösterir",
   "Start guided lesson": "Rehberli dersi başlat",
   "Leave guided lesson": "Rehberli dersten çık",
+  "02 / STANDARDS BOUNDARY": "02 / STANDART SINIRI",
+  "Where this model meets the standards": "Bu model standartlarla nerede kesişiyor",
+  "Standards scope checked": "Standart kapsamı kontrol edildi",
 } as const;
 
 export function translator(locale: Locale) {

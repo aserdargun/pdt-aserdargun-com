@@ -21,7 +21,7 @@ import {
   Download,
   X,
 } from "lucide-react";
-import { exhibitContent, type Locale, type View, type Condition } from "./data";
+import { exhibitContent, evidenceStandards, type Locale, type View, type Condition } from "./data";
 import { translator } from "./i18n";
 import Signals from "./Signals";
 import StaticExhibit from "./StaticExhibit";
@@ -567,6 +567,25 @@ export default function App() {
           <h3>{t("What the evidence means")}</h3>
           <p>{mode.interpretation}</p>
         </div>
+      </section>
+      <section id="evidence-standards" className="standards-boundary" aria-labelledby="evidence-standards-heading">
+        <div>
+          <span className="section-number">{t("02 / STANDARDS BOUNDARY")}</span>
+          <h2 id="evidence-standards-heading">{t("Where this model meets the standards")}</h2>
+          <p>{evidenceStandards.boundary[locale]}</p>
+        </div>
+        <ul className="standards-list">
+          {evidenceStandards.references.map((reference) => (
+            <li key={reference.id}>
+              <h3>{reference.title}</h3>
+              <p>{reference.applies[locale]}</p>
+              <p>{reference.limits[locale]}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="standards-checked">
+          {t("Standards scope checked")} {evidenceStandards.checkedAt}
+        </p>
       </section>
       <LabShell
         manifest={manifest}

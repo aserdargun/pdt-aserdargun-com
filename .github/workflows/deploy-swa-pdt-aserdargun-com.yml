@@ -26,6 +26,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Lint sources
+        run: npm run lint
       - name: Verify model and state regressions
         run: npm test
       - name: Build production artifact

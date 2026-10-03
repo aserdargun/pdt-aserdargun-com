@@ -1,6 +1,6 @@
 export type View = "assembly" | "cutaway" | "exploded" | "sensors";
 export type Locale = "en" | "tr";
-export const contentVersion = "2026-09-21.1";
+export const contentVersion = "2026-10-02.1";
 export type Condition =
   | "normal"
   | "cavitation"
@@ -152,6 +152,79 @@ export const sensors = [
     unit: "Acceleration · radial · m/s² (no reading)",
   },
 ];
+
+/**
+ * Where this teaching model sits against published condition-monitoring
+ * standards. Checked 2026-10-02 against the scope statements of each document,
+ * not against the paywalled bodies.
+ *
+ * The correction worth stating: the obvious-looking citation is the wrong one.
+ * ISO 20816-3 excludes rotordynamic pumps and any pump rigidly coupled to its
+ * motor by name, so the general Part 3 criteria do not apply to a pump set.
+ * The part that does cover pumps, Part 5, is scoped to machine sets in
+ * hydraulic power generating and pump-storage plants at 60-1000 r/min, and its
+ * own preface says its values are statistical guidelines that should not be
+ * used as guarantees. None of those limits transfer to this small process
+ * pump, which is why this lab shows no numeric alarm limits at all.
+ */
+export const evidenceStandards = {
+  checkedAt: "2026-10-02",
+  boundary: {
+    en: "No numeric alarm limit is shown here. The signals below are authored for teaching, and no limit from any standard is reproduced or implied for this pump.",
+    tr: "Burada sayısal alarm sınırı gösterilmez. Aşağıdaki belirtiler öğretim için yazılmıştır ve hiçbir standarttan alınmış sınır bu pompa için tekrarlanmaz ya da ima edilmez.",
+  },
+  references: [
+    {
+      id: "iso-17359",
+      title: "ISO 17359:2018 — Condition monitoring and diagnostics of machines, general guidelines",
+      applies: {
+        en: "The programme-level document for this machine type. It covers vibration, temperature, tribology, flow rate, contamination, power and speed, and states that it is applicable to all machines.",
+        tr: "Bu makine tipi için program düzeyindeki belgedir. Titreşim, sıcaklık, triboloji, akış debisi, kirlilik, güç ve hızı kapsar ve tüm makineler için geçerli olduğunu belirtir.",
+      },
+      limits: {
+        en: "It gives procedures for setting alarm criteria and for diagnosis and prognosis, not thresholds for any specific machine.",
+        tr: "Alarm ölçütlerini, tanı ve prognoz için yöntemleri verir; belirli bir makineye özel eşikleri değil.",
+      },
+    },
+    {
+      id: "iso-20816-1",
+      title: "ISO 20816-1:2016 — Mechanical vibration, measurement and evaluation, part 1, general guidelines",
+      applies: {
+        en: "The basic document for measuring and evaluating vibration, and the one a general search turns up first.",
+        tr: "Titreşimin ölçülmesi ve değerlendirilmesi için temel belge; genel aramada ilk bulunan da budur.",
+      },
+      limits: {
+        en: "It deliberately stops at measurement and evaluation. Its own scope sends condition monitoring and diagnostics to ISO 13373, so citing Part 1 for a diagnosis overstates it.",
+        tr: "Bilinçli olarak ölçüm ve değerlendirmede durur. Kapsamı, durum izleme ve tanıyı ISO 13373'e yönlendirir; bu yüzden tanı için Part 1'i kaynak göstermek onu abartır.",
+      },
+    },
+    {
+      id: "iso-20816-3",
+      title: "ISO 20816-3:2022 — Part 3, coupled industrial machine types",
+      applies: {
+        en: "Covers coupled industrial machines above 15 kW between 120 and 30000 r/min.",
+        tr: "15 kW üzeri ve 120-30000 r/min arasındaki birleşik endüstriyel makineleri kapsar.",
+      },
+      limits: {
+        en: "It names rotordynamic pumps, and pumps rigidly coupled to their motor, among the machine types it does not cover, directing them to Part 5. A pump is therefore out of scope for this part.",
+        tr: "Kapsamadığı makine türleri arasında rotodinamik pompaları ve motorlarına rijit bağlı pompaları açıkça sayar ve onları Part 5'e yönlendirir. Dolayısıyla bir pompa bu bölümün kapsamı dışındadır.",
+      },
+    },
+    {
+      id: "iso-20816-5",
+      title: "ISO 20816-5:2018 — Part 5, machine sets in hydraulic power generating and pump-storage plants",
+      applies: {
+        en: "The part that actually covers pump machine sets, including pumps driven by electric motors.",
+        tr: "Pompa makine setlerini gerçekten kapsayan bölüm; elektrik motoruyla sürülen pompalar da dâhil.",
+      },
+      limits: {
+        en: "It is written for machine sets in hydraulic power generating and pump-storage plants with typical speeds of 60-1000 r/min, and its preface states that the magnitude values are statistical guidelines that should not be used as guarantees. They do not transfer to a small process pump.",
+        tr: "Hidrolik üretim ve pompa-depolama tesislerindeki, tipik 60-1000 r/min hızlı makine setleri için yazılmıştır ve önsözü büyüklük değerlerinin istatistiksel kılavuzlar olduğunu, garanti olarak kullanılmaması gerektiğini söyler. Bu değerler küçük bir proses pompasına aktarılamaz.",
+      },
+    },
+  ],
+} as const;
+
 export const conditions: Record<
   Condition,
   {
